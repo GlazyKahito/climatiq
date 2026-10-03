@@ -141,9 +141,9 @@
   --color-sev-high: var(--sev-high);
   --color-sev-extreme: var(--sev-extreme);
 
-  --font-display: var(--font-orbitron), "Eurostile", "Segoe UI", system-ui, sans-serif;
-  --font-heading: var(--font-space-grotesk), "Segoe UI", system-ui, sans-serif;
-  --font-sans: var(--font-inter), "Segoe UI", system-ui, sans-serif;
+  --font-display: var(--font-unbounded), "Segoe UI", system-ui, sans-serif;
+  --font-heading: var(--font-unbounded), "Segoe UI", system-ui, sans-serif;
+  --font-sans: var(--font-manrope), "Segoe UI", system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, "Cascadia Code", monospace;
 
   --shadow-glass: var(--shadow-glass);
@@ -160,7 +160,6 @@
     background: var(--bg);
     color: var(--fg);
     font-family: var(--font-sans);
-    font-feature-settings: "cv11", "ss01";
     min-height: 100dvh;
   }
   h1,
@@ -168,7 +167,7 @@
   h3,
   h4 {
     font-family: var(--font-heading);
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
   }
   :focus-visible {
     outline: 2px solid var(--focus);

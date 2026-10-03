@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, JetBrains_Mono, Orbitron, Space_Grotesk } from 'next/font/google';
+import { JetBrains_Mono, Manrope, Unbounded } from 'next/font/google';
 import './globals.css';
 
-const orbitron = Orbitron({ variable: '--font-orbitron', subsets: ['latin'], weight: ['500', '700', '800'], display: 'swap' });
-const spaceGrotesk = Space_Grotesk({ variable: '--font-space-grotesk', subsets: ['latin'], display: 'swap' });
-const inter = Inter({ variable: '--font-inter', subsets: ['latin'], display: 'swap' });
+// Editorial pairing: Unbounded (wordmark, headings, figures) + Manrope (UI and body); JetBrains Mono for data labels.
+const unbounded = Unbounded({ variable: '--font-unbounded', subsets: ['latin'], display: 'swap' });
+const manrope = Manrope({ variable: '--font-manrope', subsets: ['latin'], display: 'swap' });
 const jetbrains = JetBrains_Mono({ variable: '--font-jetbrains', subsets: ['latin'], display: 'swap' });
 
 export const metadata: Metadata = {
@@ -25,7 +25,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
     <html
       lang="en-IN"
       data-theme="dark"
-      className={`${orbitron.variable} ${spaceGrotesk.variable} ${inter.variable} ${jetbrains.variable} antialiased`}
+      className={`${unbounded.variable} ${manrope.variable} ${jetbrains.variable} antialiased`}
     >
       <body className="min-h-dvh">{children}</body>
     </html>
