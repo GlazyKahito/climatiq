@@ -2,13 +2,23 @@
 
 import Link from 'next/link';
 import { useEffect, useId, useRef, useState } from 'react';
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import { AnimatePresence, motion, useReducedMotion, useScroll, useSpring } from 'motion/react';
 import { ArrowRight, Menu, X } from 'lucide-react';
 import { LogoMark, Wordmark } from '@/components/shell/logo';
+import { heatGradientCss } from '@/components/globe/globe-math';
 import { buttonClass } from '@/components/ui/primitives';
 import { cn } from '@/lib/utils';
 
 export type NavLink = { href: string; label: string };
+
+/** Same-page section links: when Lenis smooth scrolling is on it glides there itself, so Next must not also jump. */
+function onSectionLinkClick(e: React.MouseEvent<HTMLAnchorElement>) {
+  const url = new URL(e.currentTarget.href);
+  if (!url.hash || url.pathname !== window.location.pathname) return;
+  if (!document.documentElement.classList.contains('lenis')) return;
+  e.preventDefault();
+  window.history.replaceState(window.history.state, '', url.pathname + url.hash);
+}
 
 export const LANDING_LINKS: NavLink[] = [
   { href: '/#overview', label: 'Overview' },
@@ -26,6 +36,8 @@ export function SiteNav({ links = LANDING_LINKS }: { links?: NavLink[] }) {
   const reduce = useReducedMotion();
   const menuId = useId();
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const { scrollYProgress } = useScroll();
+  const progress = useSpring(scrollYProgress, { stiffness: 260, damping: 40, restDelta: 0.001 });
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -51,10 +63,16 @@ export function SiteNav({ links = LANDING_LINKS }: { links?: NavLink[] }) {
       <nav
         aria-label="Primary"
         className={cn(
-          'pointer-events-auto mx-auto flex max-w-6xl items-center gap-2 rounded-2xl px-3 py-2 transition-[background,box-shadow,border-color] duration-300 sm:px-4',
+          'pointer-events-auto relative mx-auto flex max-w-6xl items-center gap-2 rounded-2xl px-3 py-2 transition-[background,box-shadow,border-color] duration-300 sm:px-4',
           scrolled || open ? 'glass-strong' : 'glass',
         )}
       >
+        {/* reading progress: a heat-ramp hairline along the bottom edge of the bar */}
+        <motion.span
+          aria-hidden
+          className="pointer-events-none absolute inset-x-4 -bottom-px h-[2px] origin-left rounded-full opacity-80"
+          style={{ scaleX: reduce ? scrollYProgress : progress, background: heatGradientCss() }}
+        />
         <Link href="/" className="flex items-center gap-2 rounded-lg pr-2 text-accent" aria-label="CLIMATIQ home">
           <LogoMark className="size-7" />
           <Wordmark className="text-[13px] text-fg sm:text-sm" />
@@ -62,7 +80,11 @@ export function SiteNav({ links = LANDING_LINKS }: { links?: NavLink[] }) {
         <ul className="ml-4 hidden items-center gap-0.5 lg:flex">
           {links.map((l) => (
             <li key={l.href}>
-              <Link href={l.href} className="rounded-lg px-3 py-1.5 text-sm text-fg-muted transition-colors hover:bg-accent-soft hover:text-fg">
+              <Link
+                href={l.href}
+                onClick={onSectionLinkClick}
+                className="rounded-lg px-3 py-1.5 text-sm text-fg-muted transition-colors hover:bg-accent-soft hover:text-fg"
+              >
                 {l.label}
               </Link>
             </li>
@@ -105,7 +127,10 @@ export function SiteNav({ links = LANDING_LINKS }: { links?: NavLink[] }) {
                 <li key={l.href}>
                   <Link
                     href={l.href}
-                    onClick={() => setOpen(false)}
+                    onClick={(e) => {
+                      onSectionLinkClick(e);
+                      setOpen(false);
+                    }}
                     className="block rounded-xl px-3 py-2.5 text-sm font-medium text-fg hover:bg-accent-soft"
                   >
                     {l.label}

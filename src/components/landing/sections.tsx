@@ -43,7 +43,7 @@ export function SectionHeading({
       <p data-reveal className="text-[11px] font-semibold uppercase tracking-[0.26em] text-accent">
         {eyebrow}
       </p>
-      <h2 data-reveal id={id} className="mt-3 font-heading text-[clamp(1.9rem,3.6vw,3rem)] font-semibold leading-[1.08] tracking-tight">
+      <h2 data-reveal="split" id={id} className="mt-3 font-heading text-[clamp(1.9rem,3.6vw,3rem)] font-semibold leading-[1.08] tracking-tight">
         {title}
       </h2>
       {children && (
@@ -164,7 +164,9 @@ export function HeatIntelligenceSection() {
                 <li key={z.zone} className="flex items-center gap-3">
                   <z.icon className="size-5 text-accent" aria-hidden />
                   <span className="flex-1 font-medium">{z.zone}</span>
-                  <span className="font-display text-xl font-bold tabular">≥ {z.threshold} °C</span>
+                  <span className="font-display text-xl font-bold tabular">
+                    ≥ <span data-count>{z.threshold}</span> °C
+                  </span>
                 </li>
               ))}
             </ul>
@@ -175,11 +177,15 @@ export function HeatIntelligenceSection() {
             <dl className="mt-4 space-y-3">
               <div className="flex items-baseline justify-between gap-3">
                 <dt className="font-medium">Heatwave</dt>
-                <dd className="font-display text-xl font-bold tabular">+4.5 to +6.4 °C</dd>
+                <dd className="font-display text-xl font-bold tabular">
+                  +<span data-count>4.5</span> to +<span data-count>6.4</span> °C
+                </dd>
               </div>
               <div className="flex items-baseline justify-between gap-3">
                 <dt className="font-medium">Severe heatwave</dt>
-                <dd className="font-display text-xl font-bold tabular">&gt; +6.4 °C</dd>
+                <dd className="font-display text-xl font-bold tabular">
+                  &gt; +<span data-count>6.4</span> °C
+                </dd>
               </div>
             </dl>
             <p className="mt-4 text-xs text-fg-muted">The departure of Tmax from the normal for that day of the year.</p>
@@ -189,11 +195,15 @@ export function HeatIntelligenceSection() {
             <dl className="mt-4 space-y-3">
               <div className="flex items-baseline justify-between gap-3">
                 <dt className="font-medium">Heatwave</dt>
-                <dd className="font-display text-xl font-bold tabular">≥ 45 °C</dd>
+                <dd className="font-display text-xl font-bold tabular">
+                  ≥ <span data-count>45</span> °C
+                </dd>
               </div>
               <div className="flex items-baseline justify-between gap-3">
                 <dt className="font-medium">Severe heatwave</dt>
-                <dd className="font-display text-xl font-bold tabular">≥ 47 °C</dd>
+                <dd className="font-display text-xl font-bold tabular">
+                  ≥ <span data-count>47</span> °C
+                </dd>
               </div>
             </dl>
             <p className="mt-4 text-xs text-fg-muted">Absolute Tmax, regardless of the normal.</p>
@@ -328,7 +338,9 @@ export function FinalCta() {
         </div>
         <div className="relative">
           <LogoMark className="mx-auto size-12 text-accent" />
-          <h2 className="mt-5 font-display text-[clamp(1.6rem,4vw,3rem)] font-bold tracking-[0.06em] text-accent">Understand the Heat. Anticipate the Risk.</h2>
+          <h2 data-reveal="split" className="mt-5 font-display text-[clamp(1.6rem,4vw,3rem)] font-bold tracking-[0.06em] text-accent">
+            Understand the Heat. Anticipate the Risk.
+          </h2>
           <p className="mx-auto mt-4 max-w-xl text-fg-muted">
             Explore the May 2024 replay in the command center, or see what the public sees on the portal.
           </p>
