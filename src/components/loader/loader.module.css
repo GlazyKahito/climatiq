@@ -1,0 +1,88 @@
+/* Keyframes for the CLIMATIQ loaders. Reduced motion is handled globally (globals.css collapses animations). */
+
+.spin {
+  transform-origin: 50% 50%;
+  animation: cq-spin 1.8s linear infinite;
+}
+
+.spinSlow {
+  transform-origin: 50% 50%;
+  animation: cq-spin 7s linear infinite reverse;
+}
+
+.pulse {
+  animation: cq-pulse 2.4s ease-in-out infinite;
+}
+
+/* indeterminate bar: a highlight that travels across a hairline (never a percentage) */
+.sweep {
+  animation: cq-sweep 1.9s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+.dot {
+  animation: cq-blink 1.4s ease-in-out infinite;
+}
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Intro splash safety net: if JavaScript never takes over, fade the splash out on its own. */
+.failsafe {
+  animation: cq-failsafe 0.5s ease 7s forwards;
+}
+
+/* The intro splash is server-rendered hidden; an inline script marks it active on a first visit. */
+.intro {
+  display: none;
+}
+.intro[data-active] {
+  display: block;
+}
+
+@keyframes cq-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes cq-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes cq-sweep {
+  0% {
+    transform: translateX(-110%);
+  }
+  100% {
+    transform: translateX(310%);
+  }
+}
+
+@keyframes cq-blink {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes cq-failsafe {
+  to {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+}

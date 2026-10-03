@@ -1,26 +1,242 @@
 @import "tailwindcss";
 
+/* Theme switching: <html data-theme="light|dark">; "system" follows prefers-color-scheme. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ─────────────────────────── CLIMATIQ design tokens ───────────────────────────
+   Brand: Wine Red #7F011F · Light Sand #F5EBD0
+   Severity colours are ALWAYS paired with a text label and icon (never colour alone). */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --wine-950: #2a000a;
+  --wine-900: #4a0012;
+  --wine-800: #650119;
+  --wine-700: #7f011f; /* brand */
+  --wine-600: #9b1a39;
+  --wine-500: #b53853;
+  --wine-400: #cf6479;
+  --wine-300: #e297a5;
+  --wine-200: #f0c7cf;
+  --wine-100: #f8e3e7;
+
+  --sand-50: #fdf9ef;
+  --sand-100: #f5ebd0; /* brand */
+  --sand-200: #eddcb0;
+  --sand-300: #e1c98d;
+  --sand-400: #cfae66;
+  --sand-500: #b28f4a;
+
+  /* light theme (default) */
+  --bg: #f5ebd0;
+  --bg-elevated: #faf3e1;
+  --fg: #22070e;
+  --fg-muted: #5f454a;
+  --fg-subtle: #6e5559;
+  --accent: #7f011f;
+  --accent-fg: #f5ebd0;
+  --accent-soft: rgba(127, 1, 31, 0.08);
+  --border: rgba(127, 1, 31, 0.14);
+  --border-strong: rgba(127, 1, 31, 0.28);
+  --glass: rgba(255, 251, 240, 0.58);
+  --glass-strong: rgba(255, 252, 244, 0.84);
+  --glass-border: rgba(255, 255, 255, 0.55);
+  --shadow-glass: 0 1px 0 rgba(255, 255, 255, 0.6) inset, 0 18px 40px -18px rgba(74, 0, 18, 0.28),
+    0 2px 8px -2px rgba(74, 0, 18, 0.08);
+  --focus: #7f011f;
+
+  /* severity scale (CLIMATIQ, derived from IMD criteria) */
+  /* Fills step down in lightness Low→Extreme (teal, yellow, orange-red, wine) so levels stay distinguishable
+     under colour-vision deficiencies; *-fg variants meet text contrast on light surfaces. */
+  --sev-low: #2e7d6b;
+  --sev-moderate: #d4ad12;
+  --sev-high: #c2410c;
+  --sev-extreme: #7f011f;
+  --sev-low-fg: #1d5f50;
+  --sev-moderate-fg: #6f5300;
+  --sev-high-fg: #9a330a;
+  --sev-extreme-fg: #7f011f;
+  --sev-low-bg: rgba(46, 125, 107, 0.12);
+  --sev-moderate-bg: rgba(212, 173, 18, 0.18);
+  --sev-high-bg: rgba(194, 65, 12, 0.13);
+  --sev-extreme-bg: rgba(127, 1, 31, 0.13);
+
+  /* provenance */
+  --prov-observed: #2f5d8a;
+  --prov-reanalysis: #49657c;
+  --prov-nwp: #5b6472;
+  --prov-model: #7f011f;
+  --prov-simulated: #8a5a00;
+
+  /* heat ramp for maps (cool sand → wine) */
+  --heat-0: #f3ead2;
+  --heat-1: #f0d58f;
+  --heat-2: #eaa54c;
+  --heat-3: #d9672b;
+  --heat-4: #b52a2a;
+  --heat-5: #7f011f;
+  --heat-6: #4a0012;
+
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --bg: #12060a;
+  --bg-elevated: #1c0a10;
+  --fg: #f5ebd0;
+  --fg-muted: #cdb9a4;
+  --fg-subtle: #9a8676;
+  --accent: #e24a67;
+  --accent-fg: #12060a;
+  --accent-soft: rgba(226, 74, 103, 0.12);
+  --border: rgba(245, 235, 208, 0.12);
+  --border-strong: rgba(245, 235, 208, 0.24);
+  --glass: rgba(38, 13, 20, 0.55);
+  --glass-strong: rgba(30, 10, 16, 0.86);
+  --glass-border: rgba(245, 235, 208, 0.1);
+  --shadow-glass: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 24px 48px -20px rgba(0, 0, 0, 0.7);
+  --focus: #f5ebd0;
+  --sev-low: #4fbfa3;
+  --sev-moderate: #f2d04b;
+  --sev-high: #f0793a;
+  --sev-extreme: #ff5d7a;
+  --sev-low-fg: #74d6bd;
+  --sev-moderate-fg: #f5d963;
+  --sev-high-fg: #ff9a63;
+  --sev-extreme-fg: #ff8ba0;
+  --sev-low-bg: rgba(79, 191, 163, 0.14);
+  --sev-moderate-bg: rgba(242, 208, 75, 0.14);
+  --sev-high-bg: rgba(240, 121, 58, 0.15);
+  --sev-extreme-bg: rgba(255, 93, 122, 0.15);
+  --prov-observed: #7fb2e5;
+  --prov-reanalysis: #9db7cc;
+  --prov-nwp: #b3bcc9;
+  --prov-model: #ff8aa0;
+  --prov-simulated: #f0b44c;
+  --heat-0: #2a1218;
+  --heat-1: #5a2a14;
+  color-scheme: dark;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+  --color-glass: var(--glass);
+  --color-glass-strong: var(--glass-strong);
+  --color-wine: var(--wine-700);
+  --color-wine-900: var(--wine-900);
+  --color-wine-600: var(--wine-600);
+  --color-sand: var(--sand-100);
+  --color-sand-50: var(--sand-50);
+  --color-sand-200: var(--sand-200);
+  --color-sev-low: var(--sev-low);
+  --color-sev-moderate: var(--sev-moderate);
+  --color-sev-high: var(--sev-high);
+  --color-sev-extreme: var(--sev-extreme);
+
+  --font-display: var(--font-orbitron), "Eurostile", "Segoe UI", system-ui, sans-serif;
+  --font-heading: var(--font-space-grotesk), "Segoe UI", system-ui, sans-serif;
+  --font-sans: var(--font-inter), "Segoe UI", system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "Cascadia Code", monospace;
+
+  --shadow-glass: var(--shadow-glass);
+  --radius-glass: 1.25rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    background: var(--bg);
+    color: var(--fg);
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
+    min-height: 100dvh;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.01em;
+  }
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  ::selection {
+    background: var(--wine-700);
+    color: var(--sand-100);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Frosted glass surface */
+  .glass {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-glass);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+  }
+  .glass-strong {
+    background: var(--glass-strong);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-glass);
+    backdrop-filter: blur(22px) saturate(150%);
+    -webkit-backdrop-filter: blur(22px) saturate(150%);
+  }
+  /* Subtle film grain for atmosphere (pure CSS, no image request) */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.06;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+  /* Atmospheric app background */
+  .atmosphere {
+    background:
+      radial-gradient(1200px 700px at 85% -10%, rgba(127, 1, 31, 0.13), transparent 60%),
+      radial-gradient(900px 600px at -10% 110%, rgba(207, 174, 102, 0.28), transparent 60%),
+      var(--bg);
+  }
+  [data-theme="dark"] .atmosphere {
+    background:
+      radial-gradient(1200px 700px at 85% -10%, rgba(226, 74, 103, 0.14), transparent 60%),
+      radial-gradient(900px 600px at -10% 110%, rgba(127, 1, 31, 0.3), transparent 60%),
+      var(--bg);
+  }
+  .text-gradient-heat {
+    background: linear-gradient(100deg, var(--wine-700), #d1501a 55%, var(--sand-400));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

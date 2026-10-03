@@ -39,3 +39,19 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local data & logs
+.data/
+.devserver.log
+/test-results/
+/playwright-report/
+
+# third-party component source kept for reference only (not redistributable)
+docs/research/21st/
+!.env.example
+
+# local logs & tool artefacts
+.build.log
+.e2e.log
+.prodserver.log
+.playwright-mcp/

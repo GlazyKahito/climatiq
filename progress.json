@@ -1,0 +1,359 @@
+{
+  "project": "CLIMATIQ",
+  "updatedAt": "2026-10-03T14:02:16.176Z",
+  "items": [
+    {
+      "id": "inspect",
+      "phase": "1. Workspace inspection",
+      "title": "Inspect workspace, toolchain and latest package versions",
+      "status": "done",
+      "note": "Node 24, npm 11, git, gh, Vercel CLI available. No Docker. Fresh Next.js 16 app scaffolded in /climatiq."
+    },
+    {
+      "id": "devserver",
+      "phase": "1. Workspace inspection",
+      "title": "Local dev server + live progress tracker",
+      "status": "done",
+      "note": "Running at http://localhost:3100 (port 3000 was already in use by another app)."
+    },
+    {
+      "id": "research",
+      "phase": "2. Research & architecture",
+      "title": "Research data sources, IMD criteria, AI providers, geo data, 21st.dev components, hosting",
+      "status": "done",
+      "note": "Both research reports in docs/research/. 21st.dev registry is now API-key-locked → equivalent custom components. Gemini free tier default + template fallback; Neon via Vercel Marketplace; OpenFreeMap basemap; MapLibre v6 worker setup."
+    },
+    {
+      "id": "architecture",
+      "phase": "2. Research & architecture",
+      "title": "Write ARCHITECTURE.md (modules, data flow, DB design, auth, testing, deployment)",
+      "status": "done",
+      "note": "docs/ARCHITECTURE.md written (modules, data flow, DB, forecasting baseline, auth/RBAC, testing, deployment)."
+    },
+    {
+      "id": "foundation",
+      "phase": "3. Foundation",
+      "title": "Dependencies, design tokens, theme (Light Sand / Wine Red + dark)",
+      "status": "done",
+      "note": "Tailwind 4 design tokens (Light Sand default, Wine Red accent, dark theme), Orbitron/Space Grotesk/Inter/JetBrains Mono, shared UI kit (glass panels, severity/provenance/confidence badges, forms)."
+    },
+    {
+      "id": "database",
+      "phase": "3. Foundation",
+      "title": "PostgreSQL schema, migrations, constraints, indexes, seed + idempotent init",
+      "status": "done",
+      "note": "31 tables, 2 migrations, idempotent seed: reference, geography (36 states, 230 districts, 191 cities), people, history, forecasts."
+    },
+    {
+      "id": "auth",
+      "phase": "3. Foundation",
+      "title": "Authentication, server-side RBAC, demo accounts & role switching",
+      "status": "done",
+      "note": "jose session cookies, bcrypt, server-side DAL + region-scoped RBAC (8 roles, 25 permissions), Proxy redirect, one-click demo login + role switcher (DEMO_MODE only), audit logging."
+    },
+    {
+      "id": "shell",
+      "phase": "3. Foundation",
+      "title": "App shell: glass sidebar, top bar, search, notifications, theme switch",
+      "status": "done",
+      "note": "Collapsible glass sidebar, breadcrumbs, location search (Ctrl K), Live/Replay scenario switch, theme toggle, in-app notifications menu, account menu."
+    },
+    {
+      "id": "landing",
+      "phase": "4. Cinematic experience",
+      "title": "Cinematic landing: scroll-expansion hero, 3D globe, homepage sections",
+      "status": "done",
+      "note": "Light Sand cinematic landing, scroll-expansion hero, R3F globe with real ERA5 heat, loader, /features."
+    },
+    {
+      "id": "command",
+      "phase": "5. Core application",
+      "title": "Climate command center: India map, drilldown, layers, metric cards, panels",
+      "status": "done",
+      "note": "Command center: MapLibre (English labels, OSM borders hidden), state/district choropleth, heat grid, stations, drilldown, compare, table view, metrics, side panels; mobile overflow fixed."
+    },
+    {
+      "id": "forecast",
+      "phase": "5. Core application",
+      "title": "Heatwave prediction: baseline model, severity, confidence, detail pages",
+      "status": "done",
+      "note": "/forecasts + /forecasts/[code] (incl. city→district, India summary): run header, day selector, severity stacks, top risks, sortable table, Run-live-forecast action, forecast chart w/ band/NWP/normal/threshold/ERA5, factors, history comparison, warnings, limitations; JSON APIs"
+    },
+    {
+      "id": "stations",
+      "phase": "5. Core application",
+      "title": "Weather stations: map, details, freshness, IoT REST ingestion",
+      "status": "done",
+      "note": "24 SIMULATED stations, station pages, IoT REST ingestion (bearer key, validation, plausibility, dedup, ingestion runs), API docs."
+    },
+    {
+      "id": "advisories",
+      "phase": "5. Core application",
+      "title": "AI advisories & alerts: provider abstraction, fallback, dedup, notifications",
+      "status": "done",
+      "note": "AI advisories (Gemini/Claude/template + validated fallback), approve/publish workflow, alert engine (149 replay alerts), scoped in-app notifications, API + docs, 78 tests"
+    },
+    {
+      "id": "crm",
+      "phase": "5. Core application",
+      "title": "Heatwave response CRM: incidents, tasks, activity, dashboard",
+      "status": "done",
+      "note": "Response CRM: dashboard, incidents list/detail/new, workflow + reopen, assignment, tasks, notes, timeline; 8 fictional demo incidents"
+    },
+    {
+      "id": "analytics",
+      "phase": "5. Core application",
+      "title": "Climate analytics: history, comparisons, forecast accuracy, CSV export",
+      "status": "done",
+      "note": "/analytics: trends (small multiples), regional comparison, heatwave-frequency heat table, seasonal tables, forecast accuracy (MAE/RMSE/bias, band coverage, confusion, POD/FAR/CSI), model versions, risk across runs; CSV exports (forecasts/history/verification); 53 tests"
+    },
+    {
+      "id": "public",
+      "phase": "5. Core application",
+      "title": "Public climate portal",
+      "status": "done",
+      "note": "/portal (state SVG heat map, hottest areas, public advisories, IMD link, safety guidance, uncertainty) + /portal/[code] plain-language outlook; live by default, May-2024 replay on request."
+    },
+    {
+      "id": "admin",
+      "phase": "5. Core application",
+      "title": "Administration, profile/settings, methodology page",
+      "status": "done",
+      "note": "Admin panel (/admin): source & API status, AI provider status, forecast runs, ingestion jobs (history/grid/forecast/retention), users & region-scoped roles with anti-escalation, audit log, alert rules & thresholds (audited), safe demo reset. Settings (/settings) + methodology (/methodology)."
+    },
+    {
+      "id": "ingestion",
+      "phase": "6. Data & AI integrations",
+      "title": "Open-Meteo adapter, ingestion runs, freshness, IMD adapter interface",
+      "status": "done",
+      "note": "Real ERA5 snapshot (≈270k daily records, 266 regions, 2019–2026) + 1° heat grid + as-issued NWP (Previous Runs API) imported; live Open-Meteo NWP ingestion with retry/backoff; IMD adapter documented as not configured (API needs approval)."
+    },
+    {
+      "id": "demo",
+      "phase": "7. Demo readiness",
+      "title": "Guided walkthrough, demo story, safe demo reset",
+      "status": "done",
+      "note": "Guided multi-page tour, demo story (docs/DEMO.md), safe demo reset, one-click roles."
+    },
+    {
+      "id": "tests",
+      "phase": "8. Testing & refinement",
+      "title": "Unit, integration, E2E, accessibility, security & performance checks",
+      "status": "done",
+      "note": "tsc 0 errors · ESLint 0 problems · Vitest 243/243 · Playwright E2E 30/30 · axe 0 serious/critical on 14 pages · Lighthouse BP/SEO 100 · prod build OK · client-bundle secret scan clean · LCP 555 ms, CLS 0 on real GPU."
+    },
+    {
+      "id": "docs",
+      "phase": "9. Deployment & handover",
+      "title": "README, API docs, deployment guide (Vercel + managed Postgres), final report",
+      "status": "done",
+      "note": "README, ARCHITECTURE, API, DATA, DEPLOYMENT (Vercel + Neon), DEMO guide, TEST_REPORT, .env.example, vercel.json (daily cron)."
+    }
+  ],
+  "log": [
+    {
+      "time": "2026-10-03T14:02:16.176Z",
+      "msg": "README, API docs, deployment guide (Vercel + managed Postgres), final report → done (README, ARCHITECTURE, API, DATA, DEPLOYMENT (Vercel + Neon), DEMO guide, TEST_REPORT, .env.example, vercel.json (daily cron).)"
+    },
+    {
+      "time": "2026-10-03T14:02:15.886Z",
+      "msg": "Unit, integration, E2E, accessibility, security & performance checks → done (tsc 0 errors · ESLint 0 problems · Vitest 243/243 · Playwright E2E 30/30 · axe 0 serious/critical on 14 pages · Lighthouse BP/SEO 100 · prod build OK · client-bundle secret scan clean · LCP 555 ms, CLS 0 on real GPU.)"
+    },
+    {
+      "time": "2026-10-03T13:36:20.031Z",
+      "msg": "Globe optimised: DPR capped, on-demand rendering (full rate only while moving, ~30 fps idle), shader precompile before intro, FPS probe after warm-up. Lint: 0 problems."
+    },
+    {
+      "time": "2026-10-03T12:51:46.634Z",
+      "msg": "Guided walkthrough, demo story, safe demo reset → done (Guided multi-page tour, demo story (docs/DEMO.md), safe demo reset, one-click roles.)"
+    },
+    {
+      "time": "2026-10-03T12:51:46.072Z",
+      "msg": "Cinematic landing: scroll-expansion hero, 3D globe, homepage sections → done (Light Sand cinematic landing, scroll-expansion hero, R3F globe with real ERA5 heat, loader, /features.)"
+    },
+    {
+      "time": "2026-10-03T12:51:45.581Z",
+      "msg": "Weather stations: map, details, freshness, IoT REST ingestion → done (24 SIMULATED stations, station pages, IoT REST ingestion (bearer key, validation, plausibility, dedup, ingestion runs), API docs.)"
+    },
+    {
+      "time": "2026-10-03T12:51:45.148Z",
+      "msg": "Climate command center: India map, drilldown, layers, metric cards, panels → done (Command center: MapLibre (English labels, OSM borders hidden), state/district choropleth, heat grid, stations, drilldown, compare, table view, metrics, side panels; mobile overflow fixed.)"
+    },
+    {
+      "time": "2026-10-03T12:02:57.655Z",
+      "msg": "Heatwave response CRM: incidents, tasks, activity, dashboard → done (Response CRM: dashboard, incidents list/detail/new, workflow + reopen, assignment, tasks, notes, timeline; 8 fictional demo incidents)"
+    },
+    {
+      "time": "2026-10-03T12:02:57.231Z",
+      "msg": "AI advisories & alerts: provider abstraction, fallback, dedup, notifications → done (AI advisories (Gemini/Claude/template + validated fallback), approve/publish workflow, alert engine (149 replay alerts), scoped in-app notifications, API + docs, 78 tests)"
+    },
+    {
+      "time": "2026-10-03T12:01:36.841Z",
+      "msg": "Climate analytics: history, comparisons, forecast accuracy, CSV export → done (/analytics: trends (small multiples), regional comparison, heatwave-frequency heat table, seasonal tables, forecast accuracy (MAE/RMSE/bias, band coverage, confusion, POD/FAR/CSI), model versions, risk across runs; CSV exports (forecasts/history/verification); 53 tests)"
+    },
+    {
+      "time": "2026-10-03T12:01:36.476Z",
+      "msg": "Heatwave prediction: baseline model, severity, confidence, detail pages → done (/forecasts + /forecasts/[code] (incl. city→district, India summary): run header, day selector, severity stacks, top risks, sortable table, Run-live-forecast action, forecast chart w/ band/NWP/normal/threshold/ERA5, factors, history comparison, warnings, limitations; JSON APIs)"
+    },
+    {
+      "time": "2026-10-03T11:16:09.999Z",
+      "msg": "Cinematic landing: scroll-expansion hero, 3D globe, homepage sections → done (Cinematic landing live at / and /features: GSAP scroll-expansion hero with a light-first R3F globe (Natural Earth dots, India in Wine Red, real ERA5 26 May 2024 Tmax glyphs), perf tiers + SVG fallback, first-visit loader, DB-backed replay/live overview, IMD criteria, platform showcase, footer attribution. 34 unit tests.)"
+    },
+    {
+      "time": "2026-10-03T11:07:14.634Z",
+      "msg": "Climate analytics: history, comparisons, forecast accuracy, CSV export → doing (Analytics live: trends, regional comparison, heatwave frequency, seasonal tables, accuracy (MAE/RMSE/bias, confusion), models, risk across runs; CSV exports + JSON APIs)"
+    },
+    {
+      "time": "2026-10-03T11:07:14.394Z",
+      "msg": "Heatwave prediction: baseline model, severity, confidence, detail pages → doing (Forecast pages live: /forecasts (run header, day selector, severity stacks, top risks, sortable table, run-now action) + /forecasts/[code] (chart w/ band, NWP, normal, threshold, reanalysis; factors; history comparison; warnings; children))"
+    },
+    {
+      "time": "2026-10-03T11:00:53.961Z",
+      "msg": "Weather stations: map, details, freshness, IoT REST ingestion → doing (Seeded 24 SIMULATED stations + IoT ingestion API + tests; building /stations pages)"
+    },
+    {
+      "time": "2026-10-03T11:00:53.690Z",
+      "msg": "Climate command center: India map, drilldown, layers, metric cards, panels → doing (Command center live: map (choropleth/heat/stations/drilldown/compare/table), metrics, panels; polishing)"
+    },
+    {
+      "time": "2026-10-03T10:44:19.234Z",
+      "msg": "Git: commits authored only by the user (GlazyKahito); no AI attribution in commits/PRs."
+    },
+    {
+      "time": "2026-10-03T10:44:18.933Z",
+      "msg": "Unit, integration, E2E, accessibility, security & performance checks → doing (Vitest unit+integration passing; Playwright E2E core suite 12/12 (public pages, demo login, RBAC scoping, sign-out, demo-reset guard, API validation, health); axe accessibility suite written.)"
+    },
+    {
+      "time": "2026-10-03T10:36:12.928Z",
+      "msg": "Heatwave response CRM: incidents, tasks, activity, dashboard → doing (Incident workflow/tasks/dashboard services done & tested; 8 demo incidents seeded; building /response UI)"
+    },
+    {
+      "time": "2026-10-03T10:36:12.608Z",
+      "msg": "AI advisories & alerts: provider abstraction, fallback, dedup, notifications → doing (Providers (Gemini/Claude/template + fallback), bundle, workflow, alert engine, fan-out done & tested (78 tests); seed ran: 9 advisories, 149 replay alerts; building API + UI)"
+    },
+    {
+      "time": "2026-10-03T10:32:09.270Z",
+      "msg": "Landing hero being switched to Light Sand background + Wine Red/dark text per user request."
+    },
+    {
+      "time": "2026-10-03T10:32:08.893Z",
+      "msg": "Guided walkthrough, demo story, safe demo reset → doing (Guided multi-page tour (skippable/restartable, role-aware) + safe demo reset done; finishing demo story checks.)"
+    },
+    {
+      "time": "2026-10-03T10:32:08.536Z",
+      "msg": "Administration, profile/settings, methodology page → done (Admin panel (/admin): source & API status, AI provider status, forecast runs, ingestion jobs (history/grid/forecast/retention), users & region-scoped roles with anti-escalation, audit log, alert rules & thresholds (audited), safe demo reset. Settings (/settings) + methodology (/methodology).)"
+    },
+    {
+      "time": "2026-10-03T10:19:32.716Z",
+      "msg": "Administration, profile/settings, methodology page → doing (Methodology & transparency page done (/methodology). Building settings, admin panel, demo reset.)"
+    },
+    {
+      "time": "2026-10-03T10:19:32.453Z",
+      "msg": "Public climate portal → done (/portal (state SVG heat map, hottest areas, public advisories, IMD link, safety guidance, uncertainty) + /portal/[code] plain-language outlook; live by default, May-2024 replay on request.)"
+    },
+    {
+      "time": "2026-10-03T10:11:03.222Z",
+      "msg": "Theme: Light Sand is now the default (dark mode optional via top-bar toggle)."
+    },
+    {
+      "time": "2026-10-03T10:11:02.845Z",
+      "msg": "Replay hindcast (issued 26 May 2024, real as-issued NWP) verified against ERA5: MAE ≈1.0–1.2 °C for days 1–6. Live run issued today from Open-Meteo NWP."
+    },
+    {
+      "time": "2026-10-03T10:11:02.467Z",
+      "msg": "PostgreSQL schema, migrations, constraints, indexes, seed + idempotent init → done (31 tables, 2 migrations, idempotent seed: reference, geography (36 states, 230 districts, 191 cities), people, history, forecasts.)"
+    },
+    {
+      "time": "2026-10-03T10:11:02.079Z",
+      "msg": "Open-Meteo adapter, ingestion runs, freshness, IMD adapter interface → done (Real ERA5 snapshot (≈270k daily records, 266 regions, 2019–2026) + 1° heat grid + as-issued NWP (Previous Runs API) imported; live Open-Meteo NWP ingestion with retry/backoff; IMD adapter documented as not configured (API needs approval).)"
+    },
+    {
+      "time": "2026-10-03T09:54:00.682Z",
+      "msg": "Heatwave response CRM: incidents, tasks, activity, dashboard → doing (Planning incidents CRM)"
+    },
+    {
+      "time": "2026-10-03T09:54:00.388Z",
+      "msg": "AI advisories & alerts: provider abstraction, fallback, dedup, notifications → doing (Reading architecture; building providers + workflow)"
+    },
+    {
+      "time": "2026-10-03T09:53:57.030Z",
+      "msg": "Climate analytics: history, comparisons, forecast accuracy, CSV export → doing (Analytics: trends, heatwave frequency, accuracy, CSV export in progress)"
+    },
+    {
+      "time": "2026-10-03T09:53:56.585Z",
+      "msg": "Heatwave prediction: baseline model, severity, confidence, detail pages → doing (Forecast pages: /forecasts + /forecasts/[code] (charts, factors, provenance) in progress)"
+    },
+    {
+      "time": "2026-10-03T09:53:49.054Z",
+      "msg": "Weather stations: map, details, freshness, IoT REST ingestion → doing (Starting stations module (seed, pages, IoT API))"
+    },
+    {
+      "time": "2026-10-03T09:53:48.838Z",
+      "msg": "Climate command center: India map, drilldown, layers, metric cards, panels → doing (Starting command center (map, metrics, panels))"
+    },
+    {
+      "time": "2026-10-03T09:53:18.196Z",
+      "msg": "Cinematic landing: scroll-expansion hero, 3D globe, homepage sections → doing (Landing: cinematic hero, 3D globe, sections, loader, /features)"
+    },
+    {
+      "time": "2026-10-03T09:42:11.910Z",
+      "msg": "Research data sources, IMD criteria, AI providers, geo data, 21st.dev components, hosting → done (Both research reports in docs/research/. 21st.dev registry is now API-key-locked → equivalent custom components. Gemini free tier default + template fallback; Neon via Vercel Marketplace; OpenFreeMap basemap; MapLibre v6 worker setup.)"
+    },
+    {
+      "time": "2026-10-03T09:40:37.593Z",
+      "msg": "Open-Meteo adapter, ingestion runs, freshness, IMD adapter interface → doing (Open-Meteo adapter written (batching, retry/backoff, 429 handling). Building geography + real-data snapshot.)"
+    },
+    {
+      "time": "2026-10-03T09:40:37.340Z",
+      "msg": "Research data sources, IMD criteria, AI providers, geo data, 21st.dev components, hosting → doing (Data-source research done (docs/research/data-sources.md): geoBoundaries ADM1/ADM2 boundaries, IMD criteria confirmed, IMD API needs approval → adapter stub, Open-Meteo limits → ship real ERA5 snapshot + live API. Tech research still running.)"
+    },
+    {
+      "time": "2026-10-03T09:38:45.778Z",
+      "msg": "Test harness live: Vitest + PGlite. 28/28 tests passing (severity rules, baseline model, RBAC scoping, migrations/constraints, seed idempotency)."
+    },
+    {
+      "time": "2026-10-03T09:35:49.447Z",
+      "msg": "Heatwave prediction: baseline model, severity, confidence, detail pages → doing (Writing baseline-v1 model + IMD-derived severity classification (pure functions with unit tests).)"
+    },
+    {
+      "time": "2026-10-03T09:35:49.128Z",
+      "msg": "App shell: glass sidebar, top bar, search, notifications, theme switch → done (Collapsible glass sidebar, breadcrumbs, location search (Ctrl K), Live/Replay scenario switch, theme toggle, in-app notifications menu, account menu.)"
+    },
+    {
+      "time": "2026-10-03T09:35:48.825Z",
+      "msg": "Authentication, server-side RBAC, demo accounts & role switching → done (jose session cookies, bcrypt, server-side DAL + region-scoped RBAC (8 roles, 25 permissions), Proxy redirect, one-click demo login + role switcher (DEMO_MODE only), audit logging.)"
+    },
+    {
+      "time": "2026-10-03T09:35:48.451Z",
+      "msg": "Dependencies, design tokens, theme (Light Sand / Wine Red + dark) → done (Tailwind 4 design tokens (Light Sand default, Wine Red accent, dark theme), Orbitron/Space Grotesk/Inter/JetBrains Mono, shared UI kit (glass panels, severity/provenance/confidence badges, forms).)"
+    },
+    {
+      "time": "2026-10-03T09:27:17.106Z",
+      "msg": "Dependencies, design tokens, theme (Light Sand / Wine Red + dark) → doing (Design tokens, themes, fonts.)"
+    },
+    {
+      "time": "2026-10-03T09:27:16.850Z",
+      "msg": "PostgreSQL schema, migrations, constraints, indexes, seed + idempotent init → doing (Schema (31 tables) + first migration applied on embedded PostgreSQL 18; idempotent seed framework running (reference data seeded). Geography/demo data pending research.)"
+    },
+    {
+      "time": "2026-10-03T09:17:50.332Z",
+      "msg": "PostgreSQL schema, migrations, constraints, indexes, seed + idempotent init → doing (Writing Drizzle schema + migrations.)"
+    },
+    {
+      "time": "2026-10-03T09:17:50.097Z",
+      "msg": "Write ARCHITECTURE.md (modules, data flow, DB design, auth, testing, deployment) → done (docs/ARCHITECTURE.md written (modules, data flow, DB, forecasting baseline, auth/RBAC, testing, deployment).)"
+    },
+    {
+      "time": "2026-10-03T09:11:13.879Z",
+      "msg": "Research data sources, IMD criteria, AI providers, geo data, 21st.dev components, hosting → doing (Two research agents running: data sources/IMD/geo boundaries, and AI/hosting/21st.dev components.)"
+    },
+    {
+      "time": "2026-10-03T09:10:10.117Z",
+      "msg": "Local dev server + live progress tracker → done (Running at http://localhost:3100 (port 3000 was already in use by another app).)"
+    },
+    {
+      "time": "2026-10-03T14:28:00+05:30",
+      "msg": "Scaffolded Next.js 16.3.8 + React 19 + TypeScript + Tailwind 4 app in climatiq/."
+    }
+  ]
+}

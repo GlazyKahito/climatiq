@@ -1,0 +1,108 @@
+/* CLIMATIQ chart tokens (dataviz method, adapted to the Wine Red / Light Sand identity).
+   Categorical slots validated with the dataviz six-checks validator against the light (#faf3e1) and dark (#1c0a10)
+   chart surfaces: adjacent CVD ΔE ≥ 8, normal-vision ΔE ≥ 15, contrast ≥ 3:1.
+   Severity colours come from the global --sev-* status tokens and are always paired with icon + label. */
+.cq-viz {
+  --viz-surface: #faf3e1;
+  --viz-ink: var(--fg);
+  --viz-ink-2: var(--fg-muted);
+  --viz-muted: var(--fg-subtle);
+  --viz-grid: rgba(127, 1, 31, 0.08);
+  --viz-axis: rgba(127, 1, 31, 0.24);
+
+  /* categorical (regions): wine · blue · green · gold */
+  --viz-1: #9b1a39;
+  --viz-2: #2a78d6;
+  --viz-3: #178a62;
+  --viz-4: #a86f00;
+
+  /* forecast chart roles (validated all-pairs) */
+  --viz-model: #9b1a39; /* CLIMATIQ forecast */
+  --viz-band: rgba(155, 26, 57, 0.13); /* nominal 80 % band wash */
+  --viz-reanalysis: #2a78d6; /* ERA5 reanalysis */
+  --viz-nwp: #a86f00; /* NWP guidance */
+  --viz-normal: #8a7175; /* reference normal (dashed) */
+  --viz-threshold: var(--sev-high);
+  --viz-context: rgba(95, 69, 74, 0.32); /* de-emphasised comparison years */
+
+  /* diverging (bias): cool = model too cold, warm = model too warm */
+  --viz-cool: #2a78d6;
+  --viz-warm: #d03b3b;
+  --viz-mid: #e7ddc6;
+
+  /* sequential single hue (heat tables) */
+  --viz-seq: #7f011f;
+  --viz-on-strong: #fdf9ef;
+
+  /* text on severity fills */
+  --sev-low-ink: #ffffff;
+  --sev-moderate-ink: #22070e;
+  --sev-high-ink: #ffffff;
+  --sev-extreme-ink: #ffffff;
+}
+
+[data-theme="dark"] .cq-viz {
+  --viz-surface: #1c0a10;
+  --viz-grid: rgba(245, 235, 208, 0.08);
+  --viz-axis: rgba(245, 235, 208, 0.22);
+  --viz-1: #e24a67;
+  --viz-2: #3987e5;
+  --viz-3: #199e70;
+  --viz-4: #c98500;
+  --viz-model: #e24a67;
+  --viz-band: rgba(226, 74, 103, 0.16);
+  --viz-reanalysis: #3987e5;
+  --viz-nwp: #c98500;
+  --viz-normal: #9a8676;
+  --viz-context: rgba(205, 185, 164, 0.3);
+  --viz-cool: #3987e5;
+  --viz-warm: #e66767;
+  --viz-mid: #3a2a2c;
+  --viz-seq: #ff6b86;
+  --viz-on-strong: #12060a;
+  --sev-low-ink: #12060a;
+  --sev-moderate-ink: #12060a;
+  --sev-high-ink: #12060a;
+  --sev-extreme-ink: #12060a;
+}
+
+/* Recharts chrome: recessive hairline axes and grid, text in ink tokens (never the series colour). */
+.cq-viz .recharts-cartesian-axis-tick-value,
+.cq-viz .recharts-text {
+  fill: var(--viz-muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.cq-viz .recharts-label {
+  fill: var(--viz-ink-2);
+  font-size: 11px;
+}
+.cq-viz .recharts-cartesian-axis-line,
+.cq-viz .recharts-cartesian-axis-tick-line {
+  stroke: var(--viz-axis);
+}
+.cq-viz .recharts-cartesian-grid line {
+  stroke: var(--viz-grid);
+}
+.cq-viz .recharts-surface:focus,
+.cq-viz .recharts-wrapper:focus {
+  outline: none;
+}
+.cq-viz .recharts-wrapper:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Hatched texture for forced-colors / print only (never decorative). */
+@media (forced-colors: active) {
+  .cq-viz .sev-seg {
+    forced-color-adjust: none;
+    border: 1px solid CanvasText;
+  }
+}
+@media print {
+  .cq-viz .sev-seg-high,
+  .cq-viz .sev-seg-extreme {
+    background-image: repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.35) 0 1px, transparent 1px 5px);
+  }
+}

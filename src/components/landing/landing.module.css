@@ -1,0 +1,65 @@
+/* Landing-only effects (kept out of globals.css). Reduced motion is collapsed globally. */
+
+/* very slow drift for contour backdrops */
+.drift {
+  animation: cq-drift 38s ease-in-out infinite alternate;
+  transform-origin: 50% 50%;
+}
+
+@keyframes cq-drift {
+  from {
+    transform: translate3d(-1.5%, -1%, 0) scale(1.02) rotate(-0.6deg);
+  }
+  to {
+    transform: translate3d(1.5%, 1.2%, 0) scale(1.05) rotate(0.6deg);
+  }
+}
+
+/* scroll cue: a dot travelling down a hairline */
+.cue {
+  animation: cq-cue 2.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes cq-cue {
+  0% {
+    transform: translateY(-6px);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(26px);
+    opacity: 0;
+  }
+}
+
+/* starfield for the dark globe frame (pure CSS, two layers for depth) */
+.stars {
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, rgba(245, 235, 208, 0.55), transparent 60%),
+    radial-gradient(1px 1px at 28% 72%, rgba(245, 235, 208, 0.4), transparent 60%),
+    radial-gradient(1.2px 1.2px at 44% 32%, rgba(245, 235, 208, 0.5), transparent 60%),
+    radial-gradient(1px 1px at 63% 84%, rgba(245, 235, 208, 0.35), transparent 60%),
+    radial-gradient(1.3px 1.3px at 78% 22%, rgba(245, 235, 208, 0.55), transparent 60%),
+    radial-gradient(1px 1px at 88% 61%, rgba(245, 235, 208, 0.4), transparent 60%),
+    radial-gradient(1px 1px at 6% 52%, rgba(245, 235, 208, 0.35), transparent 60%),
+    radial-gradient(1px 1px at 54% 9%, rgba(245, 235, 208, 0.45), transparent 60%);
+  background-size: 420px 420px;
+}
+.starsFar {
+  background-image:
+    radial-gradient(0.8px 0.8px at 20% 40%, rgba(245, 235, 208, 0.3), transparent 60%),
+    radial-gradient(0.8px 0.8px at 70% 10%, rgba(245, 235, 208, 0.28), transparent 60%),
+    radial-gradient(0.8px 0.8px at 40% 90%, rgba(245, 235, 208, 0.25), transparent 60%),
+    radial-gradient(0.8px 0.8px at 90% 75%, rgba(245, 235, 208, 0.3), transparent 60%);
+  background-size: 230px 230px;
+}
+
+/* hide horizontal scrollbar on pill rails but keep them scrollable */
+.rail {
+  scrollbar-width: none;
+}
+.rail::-webkit-scrollbar {
+  display: none;
+}
