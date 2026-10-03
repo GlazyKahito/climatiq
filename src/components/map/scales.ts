@@ -3,6 +3,7 @@
  * Colours come from the CSS design tokens at runtime (see readPalette); every scale has text labels for the legend.
  */
 import type { Feature, FeatureCollection, Geometry, Polygon, Position } from 'geojson';
+import type { ExpressionSpecification } from 'maplibre-gl';
 import { fmtDelta, fmtTemp, SEVERITY_META, type Severity } from '@/lib/domain';
 import type { MapForecast, MapMetric } from './types';
 
@@ -176,10 +177,34 @@ export type RegionFeatureProps = {
   code: string;
   name: string;
   color: string;
+  /** lighter variant of `color` for hover / focus in the 3D view */
+  colorHi: string;
+  /** predicted Tmax (°C) — drives extrusion height in 3D; null without a forecast */
+  tmax: number | null;
   hasData: boolean;
   label: string;
   isPilot?: boolean;
 };
+
+/** Mixes a #rrggbb colour toward white by k (0..1); other colour formats are returned unchanged. */
+export function lighten(hex: string, k: number): string {
+  const m = /^#([0-9a-f]{6})$/i.exec(hex);
+  if (!m) return hex;
+  const v = parseInt(m[1], 16);
+  const ch = (s: number) => Math.round(((v >> s) & 255) + (255 - ((v >> s) & 255)) * k);
+  return `#${[ch(16), ch(8), ch(0)].map((c) => c.toString(16).padStart(2, '0')).join('')}`;
+}
+
+/**
+ * fill-extrusion height (m) for the 3D map: rises with predicted Tmax above 32 °C (so hot regions clearly tower over
+ * mild ones) and halves per zoom level, so a 47 °C block stays ~45 px tall from the all-India view down to a
+ * district. Regions without a forecast, or below 32 °C, stay as low plinths.
+ */
+export function extrusionHeight(scale = 1): ExpressionSpecification {
+  const units: ExpressionSpecification = ['max', 0.5, ['-', ['coalesce', ['get', 'tmax'], 0], 32]];
+  // metres per degree above 32 °C at zoom 3 and zoom 10 (×128 apart = one halving per zoom level)
+  return ['interpolate', ['exponential', 2], ['zoom'], 3, ['*', units, 50000 * scale], 10, ['*', units, (50000 / 128) * scale]];
+}
 
 /** Attaches forecast-derived colour/label properties to boundary features (by `code`). */
 export function decorateRegions(
@@ -194,6 +219,7 @@ export function decorateRegions(
     features: fc.features.map((f) => {
       const code = String(f.properties?.code ?? '');
       const v = values.get(code);
+      const color = colorFor(metric, v, p);
       return {
         type: 'Feature',
         id: f.id,
@@ -201,7 +227,9 @@ export function decorateRegions(
         properties: {
           code,
           name: String(f.properties?.name ?? code),
-          color: colorFor(metric, v, p),
+          color,
+          colorHi: lighten(color, 0.32),
+          tmax: v ? v.tmax : null,
           hasData: Boolean(v),
           label: metricValueLabel(metric, v),
           ...(pilotCodes ? { isPilot: pilotCodes.has(code) } : {}),

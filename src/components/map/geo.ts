@@ -7,7 +7,7 @@ import type { FeatureCollection } from 'geojson';
 import type { StyleSpecification } from 'maplibre-gl';
 import type { GeometryCollection, Topology } from 'topojson-specification';
 import { DARK_PALETTE, LIGHT_PALETTE, readPalette, type Palette } from './scales';
-import { labelBeforeId, localizeStyle } from './basemap-style';
+import { labelBeforeId, localizeStyle, quietBasemap } from './basemap-style';
 
 export const STATES_TOPO_URL = '/geo/india-states.topo.json';
 export const districtsTopoUrl = (stateCode: string) => `/geo/districts/${stateCode}.topo.json`;
@@ -134,7 +134,7 @@ export function useBasemapStyle(dark: boolean): BasemapState {
       if (style && Array.isArray(style.layers)) {
         // English labels, no OSM boundaries / foreign country labels (see basemap-style.ts); data layers are inserted
         // under the trailing block of label layers, i.e. above roads/water/landuse but below place names.
-        const localized = localizeStyle(style);
+        const localized = dark ? quietBasemap(localizeStyle(style)) : localizeStyle(style);
         setState({ style: localized, status: 'ok', beforeId: labelBeforeId(localized), key: `ok-${dark ? 'dark' : 'light'}` });
       } else {
         setState({ style: fallbackStyle(dark), status: 'fallback', beforeId: undefined, key: `fallback-${dark ? 'dark' : 'light'}` });

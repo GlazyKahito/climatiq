@@ -8,8 +8,10 @@ import {
   decorateRegions,
   DEPARTURE_BINS,
   departureColor,
+  extrusionHeight,
   gridCells,
   legendFor,
+  lighten,
   LIGHT_PALETTE,
   metricValueLabel,
   peakOf,
@@ -18,7 +20,7 @@ import {
   tmaxColor,
   valuesForDay,
 } from '@/components/map/scales';
-import { ENGLISH_NAME, labelBeforeId, localizeStyle } from '@/components/map/basemap-style';
+import { ENGLISH_NAME, labelBeforeId, localizeStyle, quietBasemap } from '@/components/map/basemap-style';
 import type { MapForecast } from '@/components/map/types';
 import { compareRuns, inferGridStep, parentCodeFromPath, peakByRegion, toMapForecast } from '@/server/command/map-data';
 import { inScopes, relevantToScopes } from '@/server/command/overview';
@@ -204,5 +206,64 @@ describe('region scoping', () => {
     expect(relevantToScopes('IN/IN-RJ', jaipurScope)).toBe(true); // a Rajasthan-wide advisory applies to Jaipur
     expect(relevantToScopes('IN/IN-UP', jaipurScope)).toBe(false);
     expect(inScopes('IN/IN-UP/IN-UP-AGRA', [null])).toBe(true);
+  });
+});
+
+describe('3D map helpers', () => {
+  it('lightens hex colours toward white and leaves other formats alone', () => {
+    expect(lighten('#000000', 0.5)).toBe('#808080');
+    expect(lighten('#4fbfa3', 0)).toBe('#4fbfa3');
+    expect(lighten('#4fbfa3', 1)).toBe('#ffffff');
+    expect(lighten('rgba(1,2,3,0.5)', 0.5)).toBe('rgba(1,2,3,0.5)');
+  });
+
+  it('adds Tmax and a lifted colour to decorated regions', () => {
+    const fc: FeatureCollection = { type: 'FeatureCollection', features: [{ type: 'Feature', properties: { code: 'IN-RJ', name: 'Rajasthan' }, geometry: { type: 'Point', coordinates: [74, 27] } }] };
+    const out = decorateRegions(fc, new Map([['IN-RJ', f({ sev: 'extreme' })]]), 'severity', P);
+    expect(out.features[0].properties.tmax).toBe(f({ sev: 'extreme' }).tmax);
+    expect(out.features[0].properties.colorHi).toBe(lighten(P.sev.extreme, 0.32));
+    const none = decorateRegions(fc, new Map(), 'severity', P);
+    expect(none.features[0].properties.tmax).toBeNull();
+  });
+
+  it('scales extrusion height with zoom (halving per level) between the all-India and district views', () => {
+    const h = extrusionHeight() as unknown[];
+    expect(h[0]).toBe('interpolate');
+    expect(h[1]).toEqual(['exponential', 2]);
+    expect(h[3]).toBe(3);
+    expect(h[5]).toBe(10);
+  });
+});
+
+describe('quiet dark basemap', () => {
+  const style = {
+    version: 8,
+    sources: {},
+    layers: [
+      { id: 'background', type: 'background', paint: { 'background-color': '#000' } },
+      { id: 'water', type: 'fill', source: 'ofm', 'source-layer': 'water' },
+      { id: 'landuse_residential', type: 'fill', source: 'ofm', 'source-layer': 'landuse' },
+      { id: 'building', type: 'fill', source: 'ofm', 'source-layer': 'building' },
+      { id: 'highway_minor', type: 'line', source: 'ofm', 'source-layer': 'transportation' },
+      { id: 'highway_motorway_inner', type: 'line', source: 'ofm', 'source-layer': 'transportation', minzoom: 4 },
+      { id: 'highway_name_motorway', type: 'symbol', source: 'ofm', 'source-layer': 'transportation_name' },
+      { id: 'place_village', type: 'symbol', source: 'ofm', 'source-layer': 'place' },
+      { id: 'place_town', type: 'symbol', source: 'ofm', 'source-layer': 'place', layout: { 'text-transform': 'uppercase' } },
+      { id: 'place_city_large', type: 'symbol', source: 'ofm', 'source-layer': 'place', layout: { 'text-transform': 'uppercase' } },
+      { id: 'place_country_major', type: 'symbol', source: 'ofm', 'source-layer': 'place' },
+    ],
+  } as unknown as StyleSpecification;
+
+  it('keeps water, motorways and city/town labels; drops clutter; restyles labels in sentence case', () => {
+    const out = quietBasemap(style);
+    const byId = Object.fromEntries(out.layers.map((l) => [l.id, l as { paint?: Record<string, unknown>; layout?: Record<string, unknown>; minzoom?: number }]));
+    expect(Object.keys(byId)).toEqual(['background', 'water', 'highway_motorway_inner', 'place_town', 'place_city_large']);
+    expect(byId.background.paint?.['background-color']).toBe('#1c080d');
+    expect(byId.highway_motorway_inner.minzoom).toBe(6);
+    expect(byId.place_town.minzoom).toBe(6.5);
+    expect(byId.place_city_large.layout?.['text-transform']).toBe('none');
+    expect(byId.place_city_large.paint?.['text-halo-width']).toBe(1.3);
+    // labels are limited to the subcontinent (a tilted camera sees far beyond India)
+    expect(JSON.stringify((byId.place_city_large as { filter?: unknown }).filter)).toContain('"within"');
   });
 });

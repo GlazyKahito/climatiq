@@ -10,6 +10,7 @@
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { createContext, forwardRef, useContext, useRef, useState, type ReactNode } from 'react';
 import Map, { AttributionControl, NavigationControl, type MapLayerMouseEvent, type MapRef } from 'react-map-gl/maplibre';
+import type { LightSpecification, SkySpecification } from 'maplibre-gl';
 import { CloudOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useBasemapStyle } from './geo';
@@ -41,7 +42,23 @@ export type BaseMapProps = {
   showNavigation?: boolean;
   scrollZoom?: boolean;
   overlay?: ReactNode;
+  /** initial camera tilt / rotation in degrees (3D views); the user can tilt and rotate with right-drag or Ctrl+drag */
+  pitch?: number;
+  bearing?: number;
 };
+
+/** Sky behind a tilted map: the wine-black page instead of MapLibre's default blue. */
+const SKY: SkySpecification = {
+  'sky-color': '#12060a',
+  'horizon-color': '#2a0c13',
+  'fog-color': '#1c080d',
+  'sky-horizon-blend': 0.7,
+  'horizon-fog-blend': 0.6,
+  'fog-ground-blend': 0.75,
+  'atmosphere-blend': 0,
+};
+/** Light for 3D extrusions: a warm key from the north-west so block faces read as distinct planes. */
+const LIGHT: LightSpecification = { anchor: 'viewport', color: '#fff4e4', intensity: 0.42, position: [1.3, 300, 35] };
 
 export const BaseMap = forwardRef<MapRef, BaseMapProps>(function BaseMap(
   {
@@ -61,6 +78,8 @@ export const BaseMap = forwardRef<MapRef, BaseMapProps>(function BaseMap(
     showNavigation = true,
     scrollZoom = true,
     overlay,
+    pitch = 0,
+    bearing = 0,
   },
   ref,
 ) {
@@ -69,7 +88,7 @@ export const BaseMap = forwardRef<MapRef, BaseMapProps>(function BaseMap(
   const [mapError, setMapError] = useState<string | null>(null);
   const attribCollapsed = useRef(false);
   // Last camera position; only read when the map is re-created for a new basemap style (initialViewState is mount-only).
-  const [savedView, setSavedView] = useState<{ longitude: number; latitude: number; zoom: number } | null>(null);
+  const [savedView, setSavedView] = useState<{ longitude: number; latitude: number; zoom: number; pitch: number; bearing: number } | null>(null);
 
   return (
     <div role="region" aria-label={ariaLabel} className={cn('relative h-full w-full overflow-hidden', className)}>
@@ -84,17 +103,22 @@ export const BaseMap = forwardRef<MapRef, BaseMapProps>(function BaseMap(
             mapStyle={basemap.style}
             workerUrl={MAPLIBRE_WORKER_URL}
             initialViewState={
-              savedView ?? (center ? { latitude: center.lat, longitude: center.lon, zoom: center.zoom } : { bounds, fitBoundsOptions: { padding: 16 } })
+              savedView ??
+              (center
+                ? { latitude: center.lat, longitude: center.lon, zoom: center.zoom, pitch, bearing }
+                : { bounds, fitBoundsOptions: { padding: 16 }, pitch, bearing })
             }
             onMoveEnd={(e) => {
-              setSavedView({ longitude: e.viewState.longitude, latitude: e.viewState.latitude, zoom: e.viewState.zoom });
+              const v = e.viewState;
+              setSavedView({ longitude: v.longitude, latitude: v.latitude, zoom: v.zoom, pitch: v.pitch, bearing: v.bearing });
             }}
             minZoom={3}
             maxZoom={12}
-            maxBounds={[55, -2, 110, 42]}
-            dragRotate={false}
-            pitchWithRotate={false}
-            touchPitch={false}
+            maxPitch={65}
+            maxBounds={[45, -12, 120, 48]}
+            dragRotate
+            pitchWithRotate
+            touchPitch
             scrollZoom={scrollZoom}
             attributionControl={false}
             interactiveLayerIds={interactiveLayerIds}
@@ -102,8 +126,14 @@ export const BaseMap = forwardRef<MapRef, BaseMapProps>(function BaseMap(
             onClick={onClick}
             onMouseMove={onMouseMove}
             onMouseLeave={onMouseLeave}
-            onLoad={() => {
+            onLoad={(e) => {
               attribCollapsed.current = false;
+              const m = e.target;
+              // MapLibre's default wheel zoom (1/450) feels sluggish over a country-scale map
+              m.scrollZoom.setWheelZoomRate(1 / 220);
+              m.scrollZoom.setZoomRate(1 / 60);
+              m.setSky(SKY);
+              m.setLight(LIGHT);
               onLoad?.();
             }}
             onIdle={(e) => {
@@ -136,7 +166,7 @@ export const BaseMap = forwardRef<MapRef, BaseMapProps>(function BaseMap(
               position="bottom-right"
               customAttribution={basemap.status === 'ok' ? DATA_ATTRIBUTION : `Basemap unavailable · ${DATA_ATTRIBUTION}`}
             />
-            {showNavigation && <NavigationControl position="bottom-right" showCompass={false} />}
+            {showNavigation && <NavigationControl position="bottom-right" showCompass visualizePitch />}
             {children}
           </Map>
         </BeforeIdContext.Provider>
