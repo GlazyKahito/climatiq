@@ -24,10 +24,12 @@ import {
   heatLevel,
   latLonToVec3,
   orientationFor,
+  vec3ToLatLon,
 } from './globe-math';
 import { buildGlobeGeometry, type DotField, type GlobeGeometry } from './land-dots';
 import { TIER_SETTINGS, fpsFromDeltas, type RenderTier, type TierSettings } from './perf-tier';
-import type { HeatPoint } from './heat-grid';
+import { buildCellIndex, hotness, sampleTmax, tintColor } from './global-heat';
+import type { HeatGrid, HeatPoint } from './heat-grid';
 import { isGlobeIntroHeld } from './readiness';
 
 const FOV = 35;
@@ -102,6 +104,8 @@ export type GlobeControl = { nudge: (dLon: number, dLat: number) => void };
 export type GlobeCanvasProps = {
   tier: RenderTier;
   heat: HeatPoint[] | null;
+  /** global context grid (ERA5 Tmax over land, same day) — tints the land dots outside India */
+  globalHeat?: HeatGrid | null;
   reducedMotion: boolean;
   /** resolved page theme — selects the globe palette (light is the default) */
   theme?: GlobeTheme;
@@ -174,7 +178,7 @@ function FrameDriver({ hot, enabled }: { hot: () => boolean; enabled: boolean })
   return null;
 }
 
-function Scene({ settings, theme = 'light', heat, reducedMotion, progressRef, fitRadius, controlRef, onReady, onFps, setInteracting, interacting }: SceneProps) {
+function Scene({ settings, theme = 'light', heat, globalHeat, reducedMotion, progressRef, fitRadius, controlRef, onReady, onFps, setInteracting, interacting }: SceneProps) {
   const { size, camera, gl, invalidate, scene } = useThree();
   const group = useRef<THREE.Group>(null);
   const [geo, setGeo] = useState<GlobeGeometry | null>(null);
@@ -337,7 +341,9 @@ function Scene({ settings, theme = 'light', heat, reducedMotion, progressRef, fi
     <>
       <group ref={group}>
         <Earth segments={settings.sphereSegments} palette={palette} />
-        {geo && <LandDots field={geo.dots} settings={settings} scale={pointScale} dimIndia={!!heat?.length} palette={palette} />}
+        {geo && (
+          <LandDots field={geo.dots} globalHeat={globalHeat ?? null} settings={settings} scale={pointScale} dimIndia={!!heat?.length} palette={palette} />
+        )}
         {geo && geo.indiaOutline.length > 0 && <IndiaOutline segments={geo.indiaOutline} width={settings.outlineWidth} color={palette.outline} />}
         {geo && heat && heat.length > 0 && (
           <HeatGlyphs points={heat} halos={settings.halos} reducedMotion={reducedMotion} scale={pointScale} palette={palette} />
@@ -407,6 +413,8 @@ function Earth({ segments, palette }: { segments: number; palette: Palette }) {
 const dotsVertex = /* glsl */ `
   attribute float aIndia;
   attribute float aSeed;
+  attribute vec3 aTint;
+  attribute float aHot;
   uniform float uScale;
   uniform float uLandSize;
   uniform float uIndiaSize;
@@ -414,13 +422,18 @@ const dotsVertex = /* glsl */ `
   varying float vIndia;
   varying float vFacing;
   varying float vSeed;
+  varying vec3 vTint;
+  varying float vHot;
   void main() {
     vec4 mv = modelViewMatrix * vec4(position, 1.0);
     vec3 n = normalize(normalMatrix * position);
     vFacing = dot(n, normalize(-mv.xyz));
     vIndia = aIndia;
     vSeed = aSeed;
-    float s = mix(uLandSize, uIndiaSize, aIndia);
+    vTint = aTint;
+    vHot = aHot;
+    // hotter land reads a little larger; aHot < 0 = no global data for this dot
+    float s = mix(uLandSize, uIndiaSize, aIndia) * (1.0 + 0.55 * max(aHot, 0.0));
     gl_PointSize = max(1.25, s * uScale / -mv.z);
     gl_Position = projectionMatrix * mv;
   }
@@ -434,6 +447,8 @@ const dotsFragment = /* glsl */ `
   varying float vIndia;
   varying float vFacing;
   varying float vSeed;
+  varying vec3 vTint;
+  varying float vHot;
   void main() {
     vec2 c = gl_PointCoord - 0.5;
     float d = length(c);
@@ -441,20 +456,43 @@ const dotsFragment = /* glsl */ `
     float a = smoothstep(0.5, 0.28, d);
     float limb = smoothstep(0.0, 0.45, vFacing);
     float shimmer = 0.88 + 0.12 * sin(uTime * 0.9 + vSeed * 6.2831);
-    vec3 col = mix(uLand, uIndia, vIndia);
-    float alpha = a * limb * mix(uLandAlpha * shimmer, uIndiaAlpha, vIndia);
+    float tinted = step(0.0, vHot);
+    vec3 land = mix(uLand, vTint, tinted);
+    vec3 col = mix(land, uIndia, vIndia);
+    float landAlpha = min(1.0, uLandAlpha * shimmer * (1.0 + tinted * (0.12 + 0.5 * max(vHot, 0.0))));
+    float alpha = a * limb * mix(landAlpha, uIndiaAlpha, vIndia);
     gl_FragColor = vec4(col, alpha);
   }
 `;
 
+/** Per-dot tint (rgb) and heat emphasis from the global grid; India's dots and dots with no nearby cell get aHot = −1. */
+function globalTint(field: DotField, grid: HeatGrid | null) {
+  const tint = new Float32Array(field.count * 3);
+  const hot = new Float32Array(field.count).fill(-1);
+  if (!grid) return { tint, hot };
+  const index = buildCellIndex(grid.points, grid.meta.resolutionDeg ?? undefined);
+  const p = field.positions;
+  for (let i = 0; i < field.count; i++) {
+    if (field.india[i] > 0.5) continue;
+    const { lat, lon } = vec3ToLatLon(p[i * 3], p[i * 3 + 1], p[i * 3 + 2]);
+    const t = sampleTmax(index, lat, lon);
+    if (t === null) continue;
+    tint.set(tintColor(t), i * 3); // raw sRGB values, like the palette uniforms (these shaders do no colour conversion)
+    hot[i] = hotness(t);
+  }
+  return { tint, hot };
+}
+
 function LandDots({
   field,
+  globalHeat,
   settings,
   scale,
   dimIndia,
   palette,
 }: {
   field: DotField;
+  globalHeat: HeatGrid | null;
   settings: TierSettings;
   scale: { value: number };
   dimIndia: boolean;
@@ -465,6 +503,9 @@ function LandDots({
     g.setAttribute('position', new THREE.BufferAttribute(field.positions, 3));
     g.setAttribute('aIndia', new THREE.BufferAttribute(field.india, 1));
     g.setAttribute('aSeed', new THREE.BufferAttribute(field.seeds, 1));
+    const { tint, hot } = globalTint(field, globalHeat);
+    g.setAttribute('aTint', new THREE.BufferAttribute(tint, 3));
+    g.setAttribute('aHot', new THREE.BufferAttribute(hot, 1));
     g.computeBoundingSphere();
     const spacing = Math.sqrt((4 * Math.PI) / settings.dots);
     const indiaSpacing = spacing / Math.sqrt(settings.indiaDensity);
@@ -485,7 +526,7 @@ function LandDots({
       },
     });
     return { geometry: g, material: m };
-  }, [field, settings.dots, settings.dotScale, settings.indiaDensity, scale, palette]);
+  }, [field, globalHeat, settings.dots, settings.dotScale, settings.indiaDensity, scale, palette]);
   useEffect(() => {
     material.uniforms.uIndiaAlpha.value = dimIndia ? palette.indiaAlphaDim : palette.indiaAlpha;
   }, [dimIndia, material, palette]);

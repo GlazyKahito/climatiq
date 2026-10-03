@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { detectCapabilities, pickTier, tierFromFps, type Tier } from './perf-tier';
 import { markGlobeReady } from './readiness';
 import type { GlobeControl } from './globe-canvas';
-import type { HeatGridState } from './use-heat-grid';
+import { useGlobalHeat, type HeatGridState } from './use-heat-grid';
 import { useDocTheme } from './use-doc-theme';
 
 const GlobeCanvas = dynamic(() => import('./globe-canvas'), { ssr: false });
@@ -49,6 +49,7 @@ export function Globe({ poster, heat, progressRef, fitRadius, className, label, 
   const [ready, setReady] = useState(false);
   const reducedMotion = useReducedMotion() ?? false;
   const theme = useDocTheme();
+  const globalHeat = useGlobalHeat();
 
   useEffect(() => {
     if (tier) onTier?.(tier);
@@ -120,6 +121,7 @@ export function Globe({ poster, heat, progressRef, fitRadius, className, label, 
               tier={tier}
               theme={theme}
               heat={heat.status === 'ready' ? heat.grid.points : null}
+              globalHeat={globalHeat}
               reducedMotion={reducedMotion}
               active={visible}
               progressRef={progressRef}

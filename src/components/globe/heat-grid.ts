@@ -15,6 +15,8 @@ export type HeatGridMeta = {
   license: string | null;
   dataKind: string;
   note: string | null;
+  /** grid spacing in degrees, when the file states it */
+  resolutionDeg: number | null;
 };
 
 export type HeatGrid = { meta: HeatGridMeta; points: HeatPoint[] };
@@ -60,6 +62,7 @@ export function parseHeatGrid(json: unknown): HeatGrid | null {
       license: str(m.license),
       dataKind: str(m.dataKind) ?? 'reanalysis',
       note: str(m.note),
+      resolutionDeg: num(m.resolutionDeg),
     },
     points,
   };

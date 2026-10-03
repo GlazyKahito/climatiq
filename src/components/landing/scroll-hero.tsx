@@ -7,7 +7,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import { ArrowRight, Hand, Info } from 'lucide-react';
 import { Globe } from '@/components/globe/globe';
-import { useHeatGrid } from '@/components/globe/use-heat-grid';
+import { GLOBE_TINT_STOPS, tintGradientCss } from '@/components/globe/global-heat';
+import { useGlobalHeat, useHeatGrid } from '@/components/globe/use-heat-grid';
 import { heatGradientCss, HEAT_MAX_C, HEAT_MIN_C } from '@/components/globe/globe-math';
 import { formatGridDay, heatGridCaption } from '@/components/globe/heat-grid';
 import { buttonClass } from '@/components/ui/primitives';
@@ -36,6 +37,7 @@ export function ScrollHero({ poster }: { poster: ReactNode }) {
   const root = useRef<HTMLElement>(null);
   const progressRef = useRef(0);
   const heat = useHeatGrid();
+  const world = useGlobalHeat();
 
   useGSAP(
     () => {
@@ -152,7 +154,7 @@ export function ScrollHero({ poster }: { poster: ReactNode }) {
               poster={poster}
               label={
                 ready
-                  ? `Globe with land shown as dots and India highlighted, overlaid with ${ready.stats.count} ERA5 reanalysis daily-maximum temperature points for ${formatGridDay(ready.grid.meta.day)}; hottest ${ready.stats.maxC.toFixed(1)} °C. Drag or use the arrow keys to rotate.`
+                  ? `Globe with land shown as dots and India highlighted, overlaid with ${ready.stats.count} ERA5 reanalysis daily-maximum temperature points for ${formatGridDay(ready.grid.meta.day)}; hottest ${ready.stats.maxC.toFixed(1)} °C.${world ? ' Land elsewhere is tinted by the same day’s ERA5 maximum temperature, blue for cooler and red for hotter.' : ''} Drag or use the arrow keys to rotate.`
                   : 'Globe with land shown as dots and India highlighted in wine red. Drag or use the arrow keys to rotate.'
               }
             />
@@ -196,6 +198,7 @@ export function ScrollHero({ poster }: { poster: ReactNode }) {
                   </div>
                 </dl>
                 <div className="mt-4">
+                  {world && <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.12em] text-fg-subtle">India pillars</p>}
                   <div className="h-1.5 rounded-full ring-1 ring-line" style={{ background: heatGradientCss() }} aria-hidden />
                   <div className="mt-1 flex justify-between font-mono text-[10px] text-fg-subtle">
                     <span>≤ {HEAT_MIN_C} °C</span>
@@ -203,9 +206,21 @@ export function ScrollHero({ poster }: { poster: ReactNode }) {
                     <span>≥ {HEAT_MAX_C} °C</span>
                   </div>
                 </div>
+                {world && (
+                  <div className="mt-3">
+                    <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.12em] text-fg-subtle">Rest of the world · land</p>
+                    <div className="h-1.5 rounded-full ring-1 ring-line" style={{ background: tintGradientCss() }} aria-hidden />
+                    <div className="mt-1 flex justify-between font-mono text-[10px] text-fg-subtle">
+                      <span>≤ {GLOBE_TINT_STOPS[0][0]} °C</span>
+                      <span>26</span>
+                      <span>≥ {GLOBE_TINT_STOPS[GLOBE_TINT_STOPS.length - 1][0]} °C</span>
+                    </div>
+                  </div>
+                )}
                 <p className="mt-3 hidden text-xs leading-relaxed text-fg-muted sm:block">
-                  Each pillar is one ~1° ERA5 grid cell; height and colour scale with Tmax. Reanalysis is a model reconstruction, not
-                  station measurements.
+                  Each pillar is one ~1° ERA5 grid cell; height and colour scale with Tmax.
+                  {world && ` Land elsewhere is tinted by the same day's ERA5 Tmax on a ${world.meta.resolutionDeg ?? 2.5}° grid.`} Reanalysis is
+                  a model reconstruction, not station measurements.
                 </p>
                 <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-fg-subtle">{heatGridCaption(ready.grid.meta)}</p>
               </>

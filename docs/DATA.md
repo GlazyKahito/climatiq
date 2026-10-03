@@ -42,7 +42,13 @@ Regenerate (respecting free-tier limits; responses are cached in `.data/snapshot
 node scripts/build-geo.mjs                       # boundaries & cities (inputs in .data/geo-src, see script header)
 node --import tsx scripts/fetch-snapshot.ts      # ERA5 history + replay grid (~10 min, paced)
 node --import tsx scripts/fetch-replay-nwp.ts    # as-issued NWP for the replay
+node --import tsx scripts/fetch-global-heat.ts   # globe's world context layer (~3 000 calls, ~7 min, paced)
 ```
+
+The landing globe also ships `public/data/heat-grid-global.json`: ERA5 daily Tmax on the replay day (2024-05-26,
+each location's local day) on a 2.5° grid over land from 60°S to 85°N — 3 021 cells, fetched 2026-10-03. It tints
+the land dots outside India (blue cooler → red hotter) so the replay reads in its world context; dots with no
+nearby cell keep the plain land colour.
 
 ## Runtime ingestion
 `src/server/ingestion/runner.ts` — recent ERA5 history (last 21 days, ~5-day lag), live NWP heat grid, live forecast

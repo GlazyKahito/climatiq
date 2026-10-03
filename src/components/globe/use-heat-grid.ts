@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { GLOBAL_HEAT_URL } from './global-heat';
 import { HEAT_GRID_URL, heatGridStats, parseHeatGrid, type HeatGrid, type HeatGridStats } from './heat-grid';
 
 export type HeatGridState =
@@ -40,4 +41,27 @@ export function useHeatGrid(): HeatGridState {
     };
   }, []);
   return state;
+}
+
+let globalRequest: Promise<HeatGrid | null> | null = null;
+
+/** Shared fetch of the global context grid (ERA5 Tmax over land, same day); null when absent or malformed. */
+export function loadGlobalHeat(): Promise<HeatGrid | null> {
+  globalRequest ??= fetch(GLOBAL_HEAT_URL, { cache: 'force-cache' })
+    .then(async (r) => (r.ok ? parseHeatGrid(await r.json()) : null))
+    .catch(() => null);
+  return globalRequest;
+}
+
+/** The global context grid once loaded (null while loading or when unavailable — the globe then shows plain land). */
+export function useGlobalHeat(): HeatGrid | null {
+  const [grid, setGrid] = useState<HeatGrid | null>(null);
+  useEffect(() => {
+    let alive = true;
+    loadGlobalHeat().then((g) => alive && setGrid(g));
+    return () => {
+      alive = false;
+    };
+  }, []);
+  return grid;
 }
