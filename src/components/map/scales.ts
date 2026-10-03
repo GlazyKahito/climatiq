@@ -41,10 +41,10 @@ export const DARK_PALETTE: Palette = {
   cool: ['#5d93c2', '#2f5675'],
   neutral: '#3b2a2f',
   noData: '#4a3d40',
-  line: 'rgba(245,235,208,0.35)',
-  lineStrong: '#f5ebd0',
-  fg: '#f5ebd0',
-  bg: '#12060a',
+  line: 'rgba(238,224,199,0.35)',
+  lineStrong: '#eee0c7',
+  fg: '#eee0c7',
+  bg: '#22070e',
   accent: '#e24a67',
 };
 

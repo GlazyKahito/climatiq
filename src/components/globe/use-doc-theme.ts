@@ -22,9 +22,9 @@ function subscribe(onChange: () => void) {
 }
 
 /**
- * The resolved page theme (`<html data-theme>`), updated live when the user toggles it. Light Sand is the default
- * (and the server snapshot), so WebGL palettes start light and only switch when the page is dark.
+ * The resolved page theme (`<html data-theme>`). The site renders dark (app/layout.tsx), so dark is also the server
+ * snapshot and WebGL palettes start dark without a light flash on hydration.
  */
 export function useDocTheme(): DocTheme {
-  return useSyncExternalStore(subscribe, read, () => 'light');
+  return useSyncExternalStore(subscribe, read, () => 'dark');
 }

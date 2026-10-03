@@ -3,19 +3,18 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useId, useRef, useState, useTransition } from 'react';
-import { Bell, ChevronRight, CircleHelp, History, LogOut, MapPin, Moon, Radio, Search, Sun, SunMoon, UserRound, Users } from 'lucide-react';
+import { Bell, ChevronRight, CircleHelp, History, LogOut, MapPin, Radio, Search, UserRound, Users } from 'lucide-react';
 import { restartTour } from '@/components/tour/guided-tour';
 import { cn } from '@/lib/utils';
 import { fmtRelative, type Severity } from '@/lib/domain';
 import { SeverityBadge, DemoTag } from '@/components/ui/badges';
-import { demoLogin, logout, setScenario, setTheme } from '@/app/actions/session';
+import { demoLogin, logout, setScenario } from '@/app/actions/session';
 import { markNotificationsRead } from '@/app/actions/inbox';
 
 export type TopbarProps = {
   user: { name: string; designation: string | null; roleLabel: string; scopeLabel: string; isDemo: boolean };
   scenario: 'live' | 'replay';
   replayLabel: string;
-  theme: 'light' | 'dark' | 'system';
   inbox: {
     unread: number;
     items: { id: string; title: string; body: string; link: string | null; createdAt: string; read: boolean; severity: Severity | null }[];
@@ -68,7 +67,6 @@ export function Topbar(props: TopbarProps) {
         <button type="button" onClick={() => restartTour()} className="hidden rounded-xl p-2 text-fg-muted hover:bg-accent-soft hover:text-fg sm:block" aria-label="Start guided tour" title="Guided tour">
           <CircleHelp className="size-[18px]" aria-hidden />
         </button>
-        <ThemeToggle theme={props.theme} />
         <NotificationsMenu inbox={props.inbox} />
         <UserMenu user={props.user} demoAccounts={props.demoAccounts} />
       </div>
@@ -230,28 +228,6 @@ function ScenarioSwitch({ scenario, replayLabel }: { scenario: 'live' | 'replay'
         </button>
       ))}
     </div>
-  );
-}
-
-function ThemeToggle({ theme }: { theme: 'light' | 'dark' | 'system' }) {
-  const [current, setCurrent] = useState(theme);
-  const next = current === 'light' ? 'dark' : current === 'dark' ? 'system' : 'light';
-  const Icon = current === 'light' ? Sun : current === 'dark' ? Moon : SunMoon;
-  return (
-    <button
-      type="button"
-      className="rounded-xl p-2 text-fg-muted hover:bg-accent-soft hover:text-fg"
-      aria-label={`Theme: ${current}. Switch to ${next}.`}
-      title={`Theme: ${current}`}
-      onClick={async () => {
-        setCurrent(next);
-        const resolved = next === 'system' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : next;
-        document.documentElement.dataset.theme = resolved;
-        await setTheme(next);
-      }}
-    >
-      <Icon className="size-[18px]" aria-hidden />
-    </button>
   );
 }
 

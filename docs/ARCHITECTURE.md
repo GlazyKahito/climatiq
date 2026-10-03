@@ -186,8 +186,9 @@ seed_state.
 
 ## 11. Front-end
 
-* Tailwind v4 with design tokens (CSS variables) — **Light Sand `#F5EBD0`** default theme, **Wine Red `#7F011F`**
-  accent, optional dark theme with the same identity; severity palette always paired with text labels/icons.
+* Tailwind v4 with design tokens (CSS variables) — a single theme of **sand ink `#EEE0C7`** on **wine-black
+  `#22070E`** (`<html data-theme="dark">`), **Wine Red `#7F011F`** brand accent; severity palette always paired with
+  text labels/icons.
 * Fonts: futuristic display face (Orbitron/Space Grotesk family via `next/font`) + highly legible UI/body face + mono.
 * Motion: **GSAP + ScrollTrigger** for the scroll-expansion hero and landing timelines; **Motion for React** for UI
   transitions. `prefers-reduced-motion` respected; a performance tier (WebGL support, hardware concurrency, device

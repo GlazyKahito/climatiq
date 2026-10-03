@@ -22,10 +22,20 @@ export function cardFor(width: number): CardGeometry {
   return width <= MOBILE_MAX ? HERO_CARD.mobile : HERO_CARD.desktop;
 }
 
-export function clipInset(c: CardGeometry): string {
-  return `inset(${(c.top * 100).toFixed(2)}% ${(c.side * 100).toFixed(2)}% ${(c.bottom * 100).toFixed(2)}% ${(c.side * 100).toFixed(2)}% round ${c.radius}px)`;
+/**
+ * The frame's clip-path at expansion progress `p` (0 card → 1 full-bleed). The scroll timeline writes this directly
+ * rather than letting GSAP tween clip-path strings: browsers normalise the two endpoints to different shapes
+ * (Chrome: `inset(50% 20% 4.5% round 28px)` vs `inset(0%)`), and GSAP then pairs the wrong numbers.
+ */
+export function clipInsetAt(c: CardGeometry, p: number): string {
+  const k = 1 - clamp01(p);
+  const pct = (v: number) => `${(v * k * 100).toFixed(2)}%`;
+  return `inset(${pct(c.top)} ${pct(c.side)} ${pct(c.bottom)} ${pct(c.side)} round ${(c.radius * k).toFixed(2)}px)`;
 }
-export const CLIP_FULL = 'inset(0.00% 0.00% 0.00% 0.00% round 0px)';
+
+export function clipInset(c: CardGeometry): string {
+  return clipInsetAt(c, 0);
+}
 
 /** Vertical offset (in % of the stage height) that centres the globe inside the card. */
 export function globeShiftPercent(c: CardGeometry): number {

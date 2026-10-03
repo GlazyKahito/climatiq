@@ -66,13 +66,6 @@ export async function logout() {
   redirect('/login');
 }
 
-export async function setTheme(theme: 'light' | 'dark' | 'system') {
-  const value = z.enum(['light', 'dark', 'system']).parse(theme);
-  (await cookies()).set('cq_theme', value, { path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax' });
-  const user = await getCurrentUser();
-  if (user) await getDb().update(users).set({ themePref: value }).where(eq(users.id, user.id));
-}
-
 export async function setScenario(scenario: 'live' | 'replay') {
   const value = z.enum(['live', 'replay']).parse(scenario);
   (await cookies()).set('cq_scenario', value, { path: '/', maxAge: 60 * 60 * 24 * 30, sameSite: 'lax' });

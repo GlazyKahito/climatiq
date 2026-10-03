@@ -42,9 +42,9 @@
 }
 
 [data-theme="dark"] .cq-viz {
-  --viz-surface: #1c0a10;
-  --viz-grid: rgba(245, 235, 208, 0.08);
-  --viz-axis: rgba(245, 235, 208, 0.22);
+  --viz-surface: #2d0c14;
+  --viz-grid: rgba(238, 224, 199, 0.08);
+  --viz-axis: rgba(238, 224, 199, 0.22);
   --viz-1: #e24a67;
   --viz-2: #3987e5;
   --viz-3: #199e70;

@@ -74,7 +74,7 @@ function subscribeTheme(onChange: () => void) {
 }
 
 export function useIsDark() {
-  return useSyncExternalStore(subscribeTheme, resolvedDark, () => false);
+  return useSyncExternalStore(subscribeTheme, resolvedDark, () => true);
 }
 
 export function usePalette(dark: boolean): Palette {

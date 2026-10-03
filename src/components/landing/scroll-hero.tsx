@@ -12,7 +12,7 @@ import { heatGradientCss, HEAT_MAX_C, HEAT_MIN_C } from '@/components/globe/glob
 import { formatGridDay, heatGridCaption } from '@/components/globe/heat-grid';
 import { buttonClass } from '@/components/ui/primitives';
 import { cn } from '@/lib/utils';
-import { CLIP_FULL, HERO_CARD, clipInset, globeShiftPercent, heroGlobeRadius, posterDiameterCss, type CardGeometry } from './hero-geometry';
+import { HERO_CARD, clipInset, clipInsetAt, globeShiftPercent, heroGlobeRadius, posterDiameterCss, type CardGeometry } from './hero-geometry';
 import { PatternBackdrop } from './pattern-backdrop';
 import styles from './landing.module.css';
 
@@ -52,26 +52,28 @@ export function ScrollHero({ poster }: { poster: ReactNode }) {
           progressRef.current = 0;
           if (reduce) return;
           const card = desktop ? HERO_CARD.desktop : HERO_CARD.mobile;
+          const frame = root.current?.querySelector<HTMLElement>('[data-hero-frame]');
           const proxy = { p: 0 };
           const spread = () => window.innerWidth * (desktop ? 0.2 : 0.06);
           const tl = gsap.timeline({
             defaults: { ease: 'none' },
             scrollTrigger: { trigger: root.current, start: 'top top', end: 'bottom bottom', scrub: 0.7, invalidateOnRefresh: true },
           });
-          tl.fromTo('[data-hero-frame]', { clipPath: clipInset(card) }, { clipPath: CLIP_FULL, ease: 'power2.inOut', duration: 0.55 }, 0)
-            .fromTo(
-              proxy,
-              { p: 0 },
-              {
-                p: 1,
-                ease: 'power2.inOut',
-                duration: 0.55,
-                onUpdate: () => {
-                  progressRef.current = proxy.p;
-                },
+          // one eased progress drives both the frame's clip-path and the globe camera, so they stay in lockstep
+          tl.fromTo(
+            proxy,
+            { p: 0 },
+            {
+              p: 1,
+              ease: 'power2.inOut',
+              duration: 0.55,
+              onUpdate: () => {
+                progressRef.current = proxy.p;
+                if (frame) frame.style.clipPath = clipInsetAt(card, proxy.p);
               },
-              0,
-            )
+            },
+            0,
+          )
             .fromTo(
               '[data-hero-globe]',
               { x: 0, y: 0, xPercent: 0, yPercent: globeShiftPercent(card) },
@@ -90,6 +92,10 @@ export function ScrollHero({ poster }: { poster: ReactNode }) {
             .to('[data-hero-bg]', { yPercent: -10, scale: 1.06, duration: 1 }, 0)
             .fromTo('[data-hero-outro]', { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.16 }, 0.84)
             .to('[data-hero-overlay]', { autoAlpha: 0, y: -20, duration: 0.1 }, 0.9);
+          // hand the frame back to the responsive CSS variable when this breakpoint's timeline is reverted
+          return () => {
+            if (frame) frame.style.clipPath = 'var(--hero-clip)';
+          };
         },
       );
       return () => mm.revert();

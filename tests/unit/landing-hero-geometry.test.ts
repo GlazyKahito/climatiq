@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CLIP_FULL, HERO_CARD, cardFor, clipInset, globeShiftPercent, heroGlobeRadius, posterDiameterCss } from '@/components/landing/hero-geometry';
+import { HERO_CARD, cardFor, clipInset, clipInsetAt, globeShiftPercent, heroGlobeRadius, posterDiameterCss } from '@/components/landing/hero-geometry';
 
 describe('scroll-hero geometry', () => {
   it('picks the mobile card below 768 px', () => {
@@ -7,11 +7,19 @@ describe('scroll-hero geometry', () => {
     expect(cardFor(1440)).toBe(HERO_CARD.desktop);
   });
 
-  it('builds clip-path insets with the same number of components as the full-bleed state (GSAP-tweenable)', () => {
-    const card = clipInset(HERO_CARD.desktop);
-    expect(card).toMatch(/^inset\(50\.00% 20\.00% 4\.50% 20\.00% round 28px\)$/);
-    const nums = (s: string) => s.match(/[\d.]+/g)?.length;
-    expect(nums(card)).toBe(nums(CLIP_FULL));
+  it('builds the card clip-path inset', () => {
+    expect(clipInset(HERO_CARD.desktop)).toBe('inset(50.00% 20.00% 4.50% 20.00% round 28.00px)');
+  });
+
+  it('interpolates every clip-path edge linearly from the card to full-bleed', () => {
+    const nums = (s: string) => (s.match(/[\d.]+/g) ?? []).map(Number);
+    const c = HERO_CARD.desktop;
+    // regression: the bottom inset must shrink from 4.5 % toward 0, never jump (a string tween once produced 45 %)
+    expect(nums(clipInsetAt(c, 0.25))).toEqual([37.5, 15, 3.38, 15, 21]);
+    expect(nums(clipInsetAt(c, 0.5))).toEqual([25, 10, 2.25, 10, 14]);
+    expect(nums(clipInsetAt(c, 1))).toEqual([0, 0, 0, 0, 0]);
+    expect(clipInsetAt(c, -1)).toBe(clipInset(c)); // clamped
+    expect(nums(clipInsetAt(c, 2))).toEqual([0, 0, 0, 0, 0]);
   });
 
   it('centres the globe in the card', () => {

@@ -1,19 +1,15 @@
 import type { Metadata } from 'next';
-import { Bell, Database, MapPin, Palette, ShieldCheck } from 'lucide-react';
+import { Bell, Database, MapPin, ShieldCheck } from 'lucide-react';
 import { DemoTag } from '@/components/ui/badges';
 import { PageHeader, Panel } from '@/components/ui/primitives';
 import { requireUser } from '@/server/auth/dal';
 import { ROLES } from '@/lib/rbac';
 import { PasswordForm, ProfileForm, RestartTourButton } from './forms';
-import { ThemeChoice } from './theme-choice';
-import { cookies } from 'next/headers';
 
 export const metadata: Metadata = { title: 'Profile & settings' };
 
 export default async function SettingsPage() {
   const user = await requireUser();
-  const themeCookie = (await cookies()).get('cq_theme')?.value;
-  const theme = themeCookie === 'dark' || themeCookie === 'system' ? themeCookie : 'light';
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-4">
       <PageHeader eyebrow="Account" title="Profile & settings" description="Your profile, access, preferences and how your data is handled." />
@@ -39,10 +35,6 @@ export default async function SettingsPage() {
           </ul>
         </Panel>
 
-        <Panel title="Appearance" description="Light Sand is the default theme." actions={<Palette className="size-4 text-fg-subtle" aria-hidden />}>
-          <ThemeChoice initial={theme} />
-        </Panel>
-
         <Panel title="Notifications" actions={<Bell className="size-4 text-fg-subtle" aria-hidden />}>
           <p className="text-sm text-fg-muted">
             Alerts and assignments are delivered <strong className="text-fg">in-app</strong> for the regions you are responsible for. Email and SMS delivery are planned and not enabled in this prototype.
@@ -59,7 +51,7 @@ export default async function SettingsPage() {
 
         <Panel className="lg:col-span-2" title="Your data" actions={<Database className="size-4 text-fg-subtle" aria-hidden />}>
           <ul className="list-disc space-y-1 pl-5 text-sm text-fg-muted">
-            <li>Stored: name, email, designation, role and region assignments, a bcrypt password hash, last sign-in time and theme preference.</li>
+            <li>Stored: name, email, designation, role and region assignments, a bcrypt password hash and last sign-in time.</li>
             <li>Actions that change data (incidents, advisories, alerts, settings) are recorded in an audit log with your name.</li>
             <li>Sessions use a signed, http-only cookie that expires after 12 hours.</li>
             <li>No personal data is sent to AI providers or weather services.</li>

@@ -68,11 +68,11 @@ function Chart({
               labelFormatter={(t) => fmtFull(Number(t))}
               formatter={(v) => (v == null ? ['no report', label] : [`${Number(v).toFixed(1)}${unit}`, label])}
               contentStyle={{
-                background: dark ? 'rgba(30,10,16,0.95)' : 'rgba(255,252,244,0.97)',
+                background: dark ? 'rgba(45,12,20,0.95)' : 'rgba(255,252,244,0.97)',
                 border: `1px solid ${grid}`,
                 borderRadius: 10,
                 fontSize: 12,
-                color: dark ? '#f5ebd0' : '#22070e',
+                color: dark ? '#eee0c7' : '#22070e',
               }}
               cursor={{ stroke: ink, strokeDasharray: '3 3' }}
             />

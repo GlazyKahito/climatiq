@@ -16,5 +16,5 @@ export const NAV: NavItem[] = [
 export const SECONDARY_NAV: NavItem[] = [
   { href: '/portal', label: 'Public portal', icon: 'Globe2', description: 'Public climate information' },
   { href: '/methodology', label: 'Methodology', icon: 'BookOpenText', description: 'Data sources, models and limitations' },
-  { href: '/settings', label: 'Profile & settings', icon: 'Settings2', description: 'Your profile, theme and preferences' },
+  { href: '/settings', label: 'Profile & settings', icon: 'Settings2', description: 'Your profile and preferences' },
 ];

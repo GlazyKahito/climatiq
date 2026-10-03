@@ -1,4 +1,3 @@
-import { cookies } from 'next/headers';
 import { AppShell } from '@/components/shell/app-shell';
 import { NAV, SECONDARY_NAV } from '@/lib/nav';
 import { can } from '@/lib/rbac';
@@ -12,14 +11,12 @@ import { currentScenario, REPLAY } from '@/server/scenario';
 export default async function AppLayout({ children }: LayoutProps<'/'>) {
   const user = await requireUser();
   const db = getDb();
-  const [inbox, demoAccounts, scenario, themeCookie] = await Promise.all([
+  const [inbox, demoAccounts, scenario] = await Promise.all([
     inboxFor(db, user.id),
     env().DEMO_MODE ? listDemoAccounts(db) : Promise.resolve(null),
     currentScenario(),
-    cookies().then((c) => c.get('cq_theme')?.value),
   ]);
   const scope = describeScope(user.assignments);
-  const theme = themeCookie === 'dark' || themeCookie === 'system' ? themeCookie : 'light';
 
   const nav = NAV.filter((n) => !n.permission || can(user.assignments, n.permission));
   return (
@@ -31,7 +28,6 @@ export default async function AppLayout({ children }: LayoutProps<'/'>) {
         user: { name: user.name, designation: user.designation, isDemo: user.isDemo, ...scope },
         scenario,
         replayLabel: REPLAY.label,
-        theme,
         inbox,
         demoAccounts: demoAccounts?.map((a) => ({ id: a.id, name: a.name, roleLabel: a.roleLabel, scopeLabel: a.scopeLabel })) ?? null,
       }}
