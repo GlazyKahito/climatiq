@@ -28,6 +28,7 @@ import {
 import { buildGlobeGeometry, type DotField, type GlobeGeometry } from './land-dots';
 import { TIER_SETTINGS, fpsFromDeltas, type RenderTier, type TierSettings } from './perf-tier';
 import type { HeatPoint } from './heat-grid';
+import { isGlobeIntroHeld } from './readiness';
 
 const FOV = 35;
 
@@ -302,7 +303,8 @@ function Scene({ settings, theme = 'light', heat, reducedMotion, progressRef, fi
   useFrame((state, rawDt) => {
     const dt = Math.min(rawDt, 0.05);
     const r = rig.current;
-    if (compiled) r.t += dt; // the intro clock starts once the dots exist and shaders are compiled
+    // the intro clock starts once the dots exist and shaders are compiled — and the first-visit intro has let go
+    if (compiled && (r.t > 0 || !isGlobeIntroHeld())) r.t += dt;
     const p = progressRef?.current ?? 0;
 
     // Camera distance that gives the requested on-screen radius.

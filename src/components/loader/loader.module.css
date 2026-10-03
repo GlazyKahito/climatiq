@@ -14,6 +14,10 @@
   animation: cq-pulse 2.4s ease-in-out infinite;
 }
 
+.blink {
+  animation: cq-blink 1.1s ease-in-out infinite;
+}
+
 /* indeterminate bar: a highlight that travels across a hairline (never a percentage) */
 .sweep {
   animation: cq-sweep 1.9s cubic-bezier(0.65, 0, 0.35, 1) infinite;
@@ -40,6 +44,53 @@
 }
 .intro[data-active] {
   display: block;
+}
+
+/* Intro hand-off: a feathered hole burns open from the globe's centre. The intro root sets --ix/--iy (centre) and
+   tweens --ir (radius); a negative radius keeps the layer fully opaque. */
+.iris {
+  -webkit-mask-image: radial-gradient(circle at var(--ix, 50%) var(--iy, 70%), transparent calc(var(--ir) - 40px), #000 var(--ir));
+  mask-image: radial-gradient(circle at var(--ix, 50%) var(--iy, 70%), transparent calc(var(--ir) - 40px), #000 var(--ir));
+}
+
+/* glowing heat front riding the edge of the iris */
+.rim {
+  position: absolute;
+  left: calc(var(--ix, 50%) - var(--ir));
+  top: calc(var(--iy, 70%) - var(--ir));
+  width: calc(var(--ir) * 2);
+  height: calc(var(--ir) * 2);
+  border-radius: 9999px;
+  border: 1.5px solid rgba(255, 200, 156, 0.9);
+  box-shadow:
+    0 0 38px 10px rgba(240, 121, 58, 0.5),
+    inset 0 0 48px 8px rgba(240, 121, 58, 0.38);
+  pointer-events: none;
+}
+
+/* heat bloom behind the readout: grows as the temperature climbs */
+.bloom {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 120vmax;
+  height: 120vmax;
+  margin: -60vmax 0 0 -60vmax;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    rgba(240, 121, 58, 0.42) 0%,
+    rgba(181, 42, 42, 0.24) 20%,
+    rgba(127, 1, 31, 0.12) 40%,
+    transparent 62%
+  );
+  pointer-events: none;
+}
+
+/* faint horizontal scanlines over the boot screen */
+.scan {
+  background-image: repeating-linear-gradient(to bottom, rgba(238, 224, 199, 0.035) 0 1px, transparent 1px 3px);
+  pointer-events: none;
 }
 
 @keyframes cq-spin {

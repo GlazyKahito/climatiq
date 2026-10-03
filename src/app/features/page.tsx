@@ -8,6 +8,7 @@ import { PatternBackdrop } from '@/components/landing/pattern-backdrop';
 import { Reveal } from '@/components/landing/reveal';
 import { FinalCta, SiteFooter } from '@/components/landing/sections';
 import { SiteNav } from '@/components/landing/site-nav';
+import { SmoothScroll } from '@/components/landing/smooth-scroll';
 import { buttonClass } from '@/components/ui/primitives';
 import { cn } from '@/lib/utils';
 import { getLandingArt } from '@/server/landing/geo-art';
@@ -32,6 +33,7 @@ export default async function FeaturesPage() {
       >
         Skip to content
       </a>
+      <SmoothScroll />
       <div className="relative overflow-x-clip">
         <SiteNav />
         <main id="main-content" tabIndex={-1} className="outline-none">
@@ -41,7 +43,7 @@ export default async function FeaturesPage() {
               <p data-reveal className="text-[11px] font-semibold uppercase tracking-[0.26em] text-accent">
                 Features
               </p>
-              <h1 data-reveal className="mt-3 max-w-4xl font-heading text-[clamp(2.2rem,5vw,4rem)] font-semibold leading-[1.04] tracking-tight">
+              <h1 data-reveal="split" className="mt-3 max-w-4xl font-heading text-[clamp(2.2rem,5vw,4rem)] font-semibold leading-[1.04] tracking-tight">
                 Everything CLIMATIQ does — and what powers each part.
               </h1>
               <p data-reveal className="mt-5 max-w-2xl text-base leading-relaxed text-fg-muted sm:text-lg">
@@ -89,7 +91,7 @@ export default async function FeaturesPage() {
                         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-fg-subtle">
                           {String(i + 1).padStart(2, '0')} · {f.kicker}
                         </p>
-                        <h2 id={`${f.id}-title`} className="font-heading text-2xl font-semibold sm:text-3xl">
+                        <h2 id={`${f.id}-title`} data-reveal="split" className="font-heading text-2xl font-semibold sm:text-3xl">
                           {f.title}
                         </h2>
                       </div>
@@ -126,7 +128,7 @@ export default async function FeaturesPage() {
                       </Link>
                     </div>
                   </div>
-                  <div data-reveal className={cn('flex min-h-[300px] lg:min-h-[360px] [&>*]:flex-1', flip && 'lg:order-1')}>
+                  <div data-reveal="clip" className={cn('flex min-h-[300px] rounded-3xl lg:min-h-[360px] [&>*]:flex-1', flip && 'lg:order-1')}>
                     <FeaturePreview id={f.id} india={art.india} heatLabel={heatLabel} />
                   </div>
                 </div>

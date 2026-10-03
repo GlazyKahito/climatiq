@@ -2,6 +2,8 @@
  * Tiny cross-component signal: "the globe has drawn its first real frame" (or settled on the static fallback).
  * The intro loader listens to it so its status line reflects actual asset readiness instead of a fake percentage.
  */
+import { INTRO_ID } from '@/components/loader/constants';
+
 export type GlobeReadyKind = 'webgl' | 'fallback';
 
 const EVENT = 'cq:globe-ready';
@@ -31,4 +33,14 @@ export function onGlobeReady(cb: (kind: GlobeReadyKind) => void): () => void {
 /** True when a globe exists on the current page (so the loader knows whether to wait for it). */
 export function pageHasGlobe() {
   return typeof document !== 'undefined' && !!document.querySelector('[data-cq-globe]');
+}
+
+/**
+ * True while the first-visit intro still covers the page. The globe holds its spin-in until the intro starts
+ * revealing it, so the spin plays where people can see it instead of behind the overlay.
+ */
+export function isGlobeIntroHeld() {
+  if (typeof document === 'undefined') return false;
+  const intro = document.getElementById(INTRO_ID);
+  return !!intro && intro.hasAttribute('data-active') && !intro.hasAttribute('data-reveal');
 }

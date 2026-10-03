@@ -12,6 +12,7 @@ import { Reveal } from '@/components/landing/reveal';
 import { ScrollHero } from '@/components/landing/scroll-hero';
 import { AboutSection, FinalCta, HeatIntelligenceSection, ResponseSection, SectionHeading, SiteFooter } from '@/components/landing/sections';
 import { SiteNav } from '@/components/landing/site-nav';
+import { SmoothScroll } from '@/components/landing/smooth-scroll';
 import { IntroLoader } from '@/components/loader/intro-loader';
 import { getDb } from '@/server/db/client';
 import { getLandingArt } from '@/server/landing/geo-art';
@@ -39,6 +40,7 @@ export default async function Home() {
         Skip to content
       </a>
       <IntroLoader />
+      <SmoothScroll />
       <div id="cq-page" className="relative overflow-x-clip">
         <SiteNav />
         <main id="main-content" tabIndex={-1} className="outline-none">
@@ -73,7 +75,7 @@ function OverviewSection() {
             <OverviewCta />
           </div>
         </div>
-        <div data-reveal className="mt-10">
+        <div data-reveal="clip" className="mt-10 rounded-3xl">
           <Suspense fallback={<ClimateOverviewSkeleton />}>
             <OverviewData />
           </Suspense>

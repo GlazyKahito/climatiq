@@ -15,6 +15,12 @@ export const HERO_CARD: { desktop: CardGeometry; mobile: CardGeometry } = {
 
 export const MOBILE_MAX = 767.98;
 
+/**
+ * Type of the hero wordmark. The intro renders its wordmark with exactly these classes so it can fly onto the hero's
+ * `[data-hero-word]` and hand over without a visible seam.
+ */
+export const HERO_WORDMARK_CLASS = 'font-display text-[clamp(2.7rem,min(12.5vw,15svh),10rem)] font-extrabold leading-[0.95] tracking-[0.04em]';
+
 /** Globe radius as a share of min(viewport W, H) when expanded. */
 const FILL_FULL = { desktop: 0.37, mobile: 0.45 };
 

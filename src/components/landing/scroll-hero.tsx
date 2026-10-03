@@ -12,7 +12,7 @@ import { heatGradientCss, HEAT_MAX_C, HEAT_MIN_C } from '@/components/globe/glob
 import { formatGridDay, heatGridCaption } from '@/components/globe/heat-grid';
 import { buttonClass } from '@/components/ui/primitives';
 import { cn } from '@/lib/utils';
-import { HERO_CARD, clipInset, clipInsetAt, globeShiftPercent, heroGlobeRadius, posterDiameterCss, type CardGeometry } from './hero-geometry';
+import { HERO_CARD, HERO_WORDMARK_CLASS, clipInset, clipInsetAt, globeShiftPercent, heroGlobeRadius, posterDiameterCss, type CardGeometry } from './hero-geometry';
 import { PatternBackdrop } from './pattern-backdrop';
 import styles from './landing.module.css';
 
@@ -230,13 +230,9 @@ export function ScrollHero({ poster }: { poster: ReactNode }) {
           <p data-hero-fade className="inline-flex items-center gap-2 rounded-full border border-line-strong bg-glass px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-accent backdrop-blur">
             <span className="size-1.5 rounded-full bg-accent" aria-hidden /> Heatwave decision support · India
           </p>
-          <h1
-            id="hero-title"
-            data-hero-title
-            className="mt-4 font-display text-[clamp(2.7rem,min(12.5vw,15svh),10rem)] font-extrabold leading-[0.95] tracking-[0.04em] text-fg"
-          >
+          <h1 id="hero-title" data-hero-title className={cn('mt-4 text-fg', HERO_WORDMARK_CLASS)}>
             <span className="sr-only">CLIMATIQ</span>
-            <span aria-hidden className="inline-flex">
+            <span aria-hidden data-hero-word className="inline-flex">
               <span data-hero-split="left" className="inline-block">
                 CLIM
               </span>

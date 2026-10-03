@@ -10,7 +10,8 @@ export type HeatGridState =
 
 let request: Promise<HeatGridState> | null = null;
 
-function load(): Promise<HeatGridState> {
+/** Shared, memoised fetch of the replay grid (the hero globe and the intro readout use the same request). */
+export function loadHeatGrid(): Promise<HeatGridState> {
   if (!request) {
     request = fetch(HEAT_GRID_URL, { cache: 'no-cache' })
       .then(async (r) => {
@@ -33,7 +34,7 @@ export function useHeatGrid(): HeatGridState {
   const [state, setState] = useState<HeatGridState>({ status: 'loading' });
   useEffect(() => {
     let alive = true;
-    load().then((s) => alive && setState(s));
+    loadHeatGrid().then((s) => alive && setState(s));
     return () => {
       alive = false;
     };
