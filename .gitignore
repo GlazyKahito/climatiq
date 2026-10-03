@@ -57,3 +57,8 @@ docs/research/21st/
 .playwright-mcp/
 
 .vercel
+
+# AI-tool skill files installed by integrations (local only)
+.agents/
+.claude/
+skills-lock.json
